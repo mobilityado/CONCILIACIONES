@@ -137,7 +137,11 @@ async function loadUsers(){
     const url=`${USERS_API_URL}?accion=usuarios&_=${Date.now()}`;
     const response=await fetch(url,{cache:'no-store',redirect:'follow'});
     if(!response.ok) throw new Error(`Respuesta HTTP ${response.status}`);
-    const payload=await response.json();
+    const raw=await response.text();
+    let payload;
+    try{payload=JSON.parse(raw)}catch{
+      throw new Error(`La API no devolvió JSON válido. Respuesta: ${raw.slice(0,120)}`);
+    }
     if(payload?.ok===false||payload?.error===true) throw new Error(payload.mensaje||'La API rechazó la solicitud.');
     availableUsers=normalizeUsers(payload);
     if(!availableUsers.length) throw new Error('La hoja no contiene usuarios activos.');
@@ -157,10 +161,22 @@ async function login(){
   if(!password){msg.textContent='Escribe la contraseña.';return;}
   btn.disabled=true; btn.textContent='Validando…'; msg.textContent='';
   try{
-    const body=new URLSearchParams({accion:'login',usuario:user,password});
-    const response=await fetch(USERS_API_URL,{method:'POST',body,redirect:'follow'});
+    // Enviar JSON como text/plain evita el preflight CORS de GitHub Pages y
+    // coincide con JSON.parse(e.postData.contents) en Google Apps Script.
+    const body=JSON.stringify({accion:'login',usuario:user,password});
+    const response=await fetch(USERS_API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body,
+      cache:'no-store',
+      redirect:'follow'
+    });
     if(!response.ok) throw new Error(`Respuesta HTTP ${response.status}`);
-    const payload=await response.json();
+    const raw=await response.text();
+    let payload;
+    try{payload=JSON.parse(raw)}catch{
+      throw new Error(`La API no devolvió JSON válido. Respuesta: ${raw.slice(0,120)}`);
+    }
     if(!(payload?.ok===true||payload?.success===true||payload?.autorizado===true)){
       throw new Error(payload?.mensaje||'Usuario o contraseña incorrectos.');
     }

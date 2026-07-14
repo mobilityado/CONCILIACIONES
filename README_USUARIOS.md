@@ -1,28 +1,34 @@
-# Configuración de usuarios — MasterWeb Pro 4.1
+# MasterWeb Pro 4.2 — Usuarios desde Google Sheets
 
-## Estructura de Google Sheets
+## Estructura compatible
 
-Crea o utiliza una pestaña llamada `USUARIOS` con estos encabezados en la fila 1:
+La hoja puede tener las columnas en este orden:
 
-| USUARIO | NOMBRE | CONTRASEÑA | ACTIVO | ROL |
-|---|---|---|---|---|
-| jlopez | José Ángel López | 123456 | SI | Administrador |
+| CONTRASEÑA | USUARIO | NOMBRE | ROL |
+|---|---|---|---|
 
-`USUARIO` y `CONTRASEÑA` son obligatorios. La lista desplegable solamente muestra usuarios activos y nunca descarga las contraseñas.
+El script identifica los encabezados por nombre, por lo que también funcionará si cambia su orden.
 
-## Apps Script
+## Actualizar Google Apps Script
 
 1. Abre el proyecto de Apps Script conectado a la hoja.
-2. Reemplaza el contenido de `Code.gs` con `GoogleAppsScript_Code.gs` incluido en este proyecto.
-3. Verifica el nombre de la pestaña en `NOMBRE_PESTANA`.
-4. Implementa como **Aplicación web**:
-   - Ejecutar como: tú.
-   - Quién tiene acceso: cualquier persona.
-5. Al actualizar una implementación existente, crea una versión nueva y confirma que la URL `/exec` siga siendo la misma.
+2. Sustituye todo el código por `GoogleAppsScript_Code.gs`.
+3. Guarda.
+4. Ve a **Implementar → Administrar implementaciones**.
+5. Edita la implementación existente.
+6. En **Versión**, selecciona **Nueva versión**.
+7. Ejecutar como: **Yo**.
+8. Quién tiene acceso: **Cualquier persona**.
+9. Pulsa **Implementar**.
 
-La página ya está configurada para la implementación:
-`AKfycbxbpunye5mRfeGk86f2DTdpMf63tYdsYRFbsJqDz7NS7h36c645yNG4zGVs1WOfSKVmcQ`
+La URL `/exec` puede permanecer igual.
 
-## Seguridad
+## Prueba de lista
 
-La contraseña se valida en Apps Script y no se entrega al navegador. Aun así, Google Sheets guarda las contraseñas como texto. Para un sistema de mayor seguridad conviene usar hashes o autenticación corporativa.
+Abre la URL `/exec?accion=usuarios`. Debe devolver JSON y nunca debe mostrar contraseñas.
+
+## Corrección incluida
+
+La página ahora envía el acceso como JSON (`text/plain`) y Apps Script acepta tanto JSON como formularios. Esto corrige el error:
+
+`Unexpected token 'a', "accion=login..." is not valid JSON`

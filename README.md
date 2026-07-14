@@ -30,3 +30,6 @@ Sistema web local para conciliar reportes CIA y ERPCO, llenar la plantilla ofici
 ## Privacidad
 
 Los documentos se procesan en el navegador y no se envían a un servidor. El historial se guarda mediante `localStorage` y la sesión mediante `sessionStorage`.
+
+## Actualización 4.2
+Se corrigió la comunicación del inicio de sesión con Apps Script. El login ahora envía JSON compatible con `e.postData.contents`, maneja respuestas no JSON y admite la hoja `CONTRASEÑA | USUARIO | NOMBRE | ROL`.
