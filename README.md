@@ -1,32 +1,32 @@
-# Conciliador Masterweb 2.0
+# MasterWeb Pro 4.0
 
-Aplicación web estática para realizar conciliaciones CIA vs ERPCO y generar el formato oficial Masterweb.
+Sistema web local para conciliar reportes CIA y ERPCO, llenar la plantilla oficial de Integración Masterweb y generar reportes de diferencias.
 
-## Funciones
+## Acceso inicial
 
-- Reconocimiento automático de reportes CIA, ERPCO SUR/TRT, Volksbus, AVA y depósitos.
-- Lectura de subtotal e IVA del reporte CIA.
-- `Dif. Canje` enviado automáticamente a Otros ingresos.
-- Generación del Excel oficial con hoja adicional de diferencias.
-- Dashboard con totales CIA, ERPCO, IVA, AVA y depósitos.
-- Reporte filtrable por conductor y detección de registros faltantes.
-- Reporte ejecutivo en PDF y diferencias en CSV.
-- Historial local de las últimas 20 conciliaciones.
-- Todo se procesa dentro del navegador; ningún archivo se envía a un servidor.
+- Usuario: `admin`
+- Contraseña: `485218`
+
+> El inicio de sesión es local y sirve como control operativo básico. GitHub Pages es alojamiento estático; para seguridad corporativa real se requiere autenticación en servidor o Microsoft Entra ID.
 
 ## Publicar en GitHub Pages
 
-1. Sube el contenido de esta carpeta a un repositorio.
-2. En GitHub abre **Settings → Pages**.
-3. Selecciona **Deploy from a branch**.
-4. Elige la rama `main` y la carpeta `/ (root)`.
-5. Guarda y espera a que GitHub publique el sitio.
+1. Descomprime el proyecto.
+2. Sube **el contenido interno** de la carpeta `conciliador-masterweb` a la raíz de tu repositorio.
+3. En GitHub abre **Settings → Pages**.
+4. Selecciona **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
+5. Guarda y espera la publicación.
 
-La carpeta `assets` y el archivo `plantilla-masterweb.xlsx` son indispensables.
+## Funciones
 
-## Archivos principales
+- Tema corporativo púrpura y diseño adaptable.
+- Sesión local y bitácora de conciliaciones.
+- Carga inteligente CIA, ERPCO, Volksbus, AVA y depósitos.
+- Lectura automática de IVA CIA y Dif. Canje.
+- Generación del Excel oficial con segunda hoja de diferencias.
+- PDF ejecutivo, CSV, dashboard, análisis inteligente y consulta por conductor.
+- Historial guardado en el navegador.
 
-- `index.html`: interfaz.
-- `styles.css`: diseño adaptable.
-- `app.js`: lectura, conciliación y exportación.
-- `assets/plantilla-masterweb.xlsx`: formato oficial.
+## Privacidad
+
+Los documentos se procesan en el navegador y no se envían a un servidor. El historial se guarda mediante `localStorage` y la sesión mediante `sessionStorage`.
