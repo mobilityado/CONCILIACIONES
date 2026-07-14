@@ -1,31 +1,32 @@
-# Conciliador CIA · ERPCO / Masterweb
+# Conciliador Masterweb 2.0
 
-Aplicación web estática para GitHub Pages. Procesa localmente los reportes CIA, ERPCO, AVA y depósitos en camino, llena el formato oficial de Integración Masterweb y agrega una hoja de diferencias por conductor.
+Aplicación web estática para realizar conciliaciones CIA vs ERPCO y generar el formato oficial Masterweb.
 
-## Publicación en GitHub Pages
+## Funciones
 
-1. Crea un repositorio nuevo en GitHub.
-2. Sube **todo el contenido** de esta carpeta, conservando `assets/plantilla-masterweb.xlsx`.
-3. Abre **Settings → Pages**.
-4. En **Build and deployment**, selecciona **Deploy from a branch**.
-5. Selecciona la rama `main`, carpeta `/ (root)` y guarda.
-6. Abre la dirección que GitHub muestre al terminar la publicación.
+- Reconocimiento automático de reportes CIA, ERPCO SUR/TRT, Volksbus, AVA y depósitos.
+- Lectura de subtotal e IVA del reporte CIA.
+- `Dif. Canje` enviado automáticamente a Otros ingresos.
+- Generación del Excel oficial con hoja adicional de diferencias.
+- Dashboard con totales CIA, ERPCO, IVA, AVA y depósitos.
+- Reporte filtrable por conductor y detección de registros faltantes.
+- Reporte ejecutivo en PDF y diferencias en CSV.
+- Historial local de las últimas 20 conciliaciones.
+- Todo se procesa dentro del navegador; ningún archivo se envía a un servidor.
 
-## Archivos esperados
+## Publicar en GitHub Pages
 
-- Cierre CIA `.xls` (tabla HTML exportada por CIA).
-- ERPCO SUR y TRT `.csv`.
-- ERPCO SUR Volksbus y TRT Volksbus `.csv`.
-- Recuperación AVA SUR/TRT `.xlsx`.
-- Depósitos en camino CIA `.xls`.
-- Depósitos en camino ERPCO `.pdf`.
+1. Sube el contenido de esta carpeta a un repositorio.
+2. En GitHub abre **Settings → Pages**.
+3. Selecciona **Deploy from a branch**.
+4. Elige la rama `main` y la carpeta `/ (root)`.
+5. Guarda y espera a que GitHub publique el sitio.
 
-## Importante
+La carpeta `assets` y el archivo `plantilla-masterweb.xlsx` son indispensables.
 
-- Los archivos se procesan dentro del navegador y no se suben a un servidor.
-- La aplicación usa SheetJS y PDF.js mediante CDN, por lo que necesita conexión a Internet al abrirla.
-- El formato oficial está en `assets/plantilla-masterweb.xlsx`. Puede sustituirse por una nueva versión, siempre que conserve la misma ubicación de celdas.
-- Antes de usarla de forma oficial, valida al menos 2 o 3 conciliaciones conocidas. Los sistemas de origen pueden cambiar encabezados o estructuras.
+## Archivos principales
 
-## Corrección de IVA
-El conciliador toma del reporte CIA las columnas **IVA Canje**, **IVA Abordo** e **IVA Pre-pago** y las coloca en la fila IVA del formato Masterweb. Los totales se calculan como subtotal + IVA.
+- `index.html`: interfaz.
+- `styles.css`: diseño adaptable.
+- `app.js`: lectura, conciliación y exportación.
+- `assets/plantilla-masterweb.xlsx`: formato oficial.
