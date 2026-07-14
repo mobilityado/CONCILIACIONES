@@ -26,3 +26,6 @@ Aplicación web estática para GitHub Pages. Procesa localmente los reportes CIA
 - La aplicación usa SheetJS y PDF.js mediante CDN, por lo que necesita conexión a Internet al abrirla.
 - El formato oficial está en `assets/plantilla-masterweb.xlsx`. Puede sustituirse por una nueva versión, siempre que conserve la misma ubicación de celdas.
 - Antes de usarla de forma oficial, valida al menos 2 o 3 conciliaciones conocidas. Los sistemas de origen pueden cambiar encabezados o estructuras.
+
+## Corrección de IVA
+El conciliador toma del reporte CIA las columnas **IVA Canje**, **IVA Abordo** e **IVA Pre-pago** y las coloca en la fila IVA del formato Masterweb. Los totales se calculan como subtotal + IVA.
