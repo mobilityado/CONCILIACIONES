@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#6d28d9">
-  <title>MasterWeb Pro 4.0</title>
+  <title>MasterWeb Pro 4.1</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -18,16 +18,21 @@
     <span class="eyebrow purple">RECAUDACIÓN VILLAHERMOSA</span>
     <h1>MasterWeb Pro</h1>
     <p>Sistema inteligente de conciliación CIA · ERPCO</p>
-    <label>Usuario<input id="loginUser" autocomplete="username" value="admin"></label>
+    <label>Usuario
+      <select id="loginUser" autocomplete="username" disabled>
+        <option value="">Cargando usuarios…</option>
+      </select>
+    </label>
     <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></label>
-    <button id="loginBtn" class="primary full">Ingresar</button>
+    <button id="loginBtn" class="primary full" disabled>Ingresar</button>
+    <button id="reloadUsersBtn" class="secondary full login-reload" type="button">↻ Actualizar lista de usuarios</button>
     <div id="loginMessage" class="login-message"></div>
-    <small>Acceso local. Los datos y archivos permanecen en este navegador.</small>
+    <small>Usuarios validados mediante Google Sheets. Los archivos de conciliación permanecen en este navegador.</small>
   </div>
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>MW</span><div><b>MasterWeb Pro</b><small>Versión 4.0</small></div></div>
+  <div class="brand"><span>MW</span><div><b>MasterWeb Pro</b><small>Versión 4.1</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
@@ -133,7 +138,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>MasterWeb Pro 4.0 · Los archivos no se envían a ningún servidor.</footer>
+<footer>MasterWeb Pro 4.1 · Los archivos no se envían a ningún servidor.</footer>
 </div></div>
 <script src="app.js"></script>
 </body>

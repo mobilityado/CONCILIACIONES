@@ -101,31 +101,101 @@ $('#driverSearchBtn').onclick=searchDriver;$('#driverQuery').addEventListener('k
 
 
 /* =========================
-   MASTERWEB PRO 4.0 — sesión local y bitácora
+   MASTERWEB PRO 4.1 — usuarios desde Google Sheets
    ========================= */
 const V4_SESSION='masterweb_session_v4';
-const V4_USERS=[{user:'admin',password:'485218',name:'Administrador'}];
+const USERS_API_URL='https://script.google.com/macros/s/AKfycbxbpunye5mRfeGk86f2DTdpMf63tYdsYRFbsJqDz7NS7h36c645yNG4zGVs1WOfSKVmcQ/exec';
+let availableUsers=[];
+
 function showAppSession(session){
   const active=Boolean(session);
   $('#loginScreen').classList.toggle('hidden-login',active);
-  if(active){$('#currentUser').textContent=session.name||session.user; document.body.dataset.user=session.user;}
+  if(active){
+    $('#currentUser').textContent=session.name||session.user;
+    const avatar=document.querySelector('.sidebar-user .avatar');
+    if(avatar) avatar.textContent=(session.name||session.user||'U').trim().charAt(0).toUpperCase();
+    document.body.dataset.user=session.user;
+  }
 }
-function login(){
-  const user=$('#loginUser').value.trim(); const password=$('#loginPassword').value;
-  const found=V4_USERS.find(x=>x.user.toLowerCase()===user.toLowerCase()&&x.password===password);
-  if(!found){$('#loginMessage').textContent='Usuario o contraseña incorrectos.';return;}
-  const session={user:found.user,name:found.name,loginAt:new Date().toISOString()};
-  sessionStorage.setItem(V4_SESSION,JSON.stringify(session)); $('#loginMessage').textContent=''; showAppSession(session);
+function normalizeUsers(payload){
+  const source=Array.isArray(payload)?payload:(payload?.usuarios||payload?.users||payload?.data||[]);
+  return source.map((x,i)=>{
+    if(typeof x==='string') return {user:x,name:x,role:''};
+    return {
+      user:String(x.usuario??x.user??x.username??x.correo??x.email??'').trim(),
+      name:String(x.nombre??x.name??x.usuario??x.user??'').trim(),
+      role:String(x.rol??x.role??'').trim()
+    };
+  }).filter(x=>x.user);
 }
-$('#loginBtn').onclick=login; $('#loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-$('#logoutBtn').onclick=()=>{sessionStorage.removeItem(V4_SESSION);showAppSession(null);$('#loginPassword').value=''};
-try{showAppSession(JSON.parse(sessionStorage.getItem(V4_SESSION)||'null'))}catch{showAppSession(null)}
+async function loadUsers(){
+  const select=$('#loginUser'),btn=$('#loginBtn'),msg=$('#loginMessage');
+  select.disabled=true; btn.disabled=true;
+  select.innerHTML='<option value="">Cargando usuarios…</option>';
+  msg.textContent='Consultando la lista de usuarios…';
+  try{
+    const url=`${USERS_API_URL}?accion=usuarios&_=${Date.now()}`;
+    const response=await fetch(url,{cache:'no-store',redirect:'follow'});
+    if(!response.ok) throw new Error(`Respuesta HTTP ${response.status}`);
+    const payload=await response.json();
+    if(payload?.ok===false||payload?.error===true) throw new Error(payload.mensaje||'La API rechazó la solicitud.');
+    availableUsers=normalizeUsers(payload);
+    if(!availableUsers.length) throw new Error('La hoja no contiene usuarios activos.');
+    select.innerHTML='<option value="">Selecciona tu usuario</option>'+availableUsers.map(u=>`<option value="${escapeHtml(u.user)}">${escapeHtml(u.name||u.user)}${u.role?` · ${escapeHtml(u.role)}`:''}</option>`).join('');
+    select.disabled=false; btn.disabled=false; msg.textContent='';
+  }catch(error){
+    console.error('No fue posible cargar usuarios:',error);
+    availableUsers=[];
+    select.innerHTML='<option value="">No se pudieron cargar los usuarios</option>';
+    msg.textContent='No fue posible consultar Google Sheets. Revisa la implementación de Apps Script y vuelve a intentarlo.';
+  }
+}
+async function login(){
+  const user=$('#loginUser').value.trim(),password=$('#loginPassword').value;
+  const btn=$('#loginBtn'),msg=$('#loginMessage');
+  if(!user){msg.textContent='Selecciona un usuario.';return;}
+  if(!password){msg.textContent='Escribe la contraseña.';return;}
+  btn.disabled=true; btn.textContent='Validando…'; msg.textContent='';
+  try{
+    const body=new URLSearchParams({accion:'login',usuario:user,password});
+    const response=await fetch(USERS_API_URL,{method:'POST',body,redirect:'follow'});
+    if(!response.ok) throw new Error(`Respuesta HTTP ${response.status}`);
+    const payload=await response.json();
+    if(!(payload?.ok===true||payload?.success===true||payload?.autorizado===true)){
+      throw new Error(payload?.mensaje||'Usuario o contraseña incorrectos.');
+    }
+    const listed=availableUsers.find(x=>x.user.toLowerCase()===user.toLowerCase());
+    const data=payload.usuario||payload.userData||payload.data||{};
+    const session={
+      user:String(data.usuario??data.user??user),
+      name:String(data.nombre??data.name??listed?.name??user),
+      role:String(data.rol??data.role??listed?.role??''),
+      loginAt:new Date().toISOString()
+    };
+    sessionStorage.setItem(V4_SESSION,JSON.stringify(session));
+    $('#loginPassword').value=''; msg.textContent=''; showAppSession(session);
+  }catch(error){
+    console.error('Error de acceso:',error);
+    msg.textContent=error.message||'No fue posible validar el acceso.';
+  }finally{
+    btn.disabled=availableUsers.length===0; btn.textContent='Ingresar';
+  }
+}
+$('#loginBtn').onclick=login;
+$('#reloadUsersBtn').onclick=loadUsers;
+$('#loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+$('#logoutBtn').onclick=()=>{sessionStorage.removeItem(V4_SESSION);showAppSession(null);$('#loginPassword').value='';loadUsers()};
+try{
+  const saved=JSON.parse(sessionStorage.getItem(V4_SESSION)||'null');
+  showAppSession(saved);
+  if(!saved) loadUsers();
+}catch{showAppSession(null);loadUsers()}
 
 // Añade el usuario que realizó la operación a cada nuevo registro del historial.
 const v4OriginalSaveHistory=typeof saveHistory==='function'?saveHistory:null;
 if(v4OriginalSaveHistory){
   saveHistory=function(item){
     const session=JSON.parse(sessionStorage.getItem(V4_SESSION)||'null');
-    v4OriginalSaveHistory({...item,usuario:session?.name||session?.user||'Usuario local'});
+    v4OriginalSaveHistory({...item,usuario:session?.name||session?.user||'Usuario'});
   }
 }
