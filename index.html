@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conciliador CIA · ERPCO | Masterweb</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<header><div><span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span><h1>Conciliador CIA · ERPCO</h1><p>Integra el formato oficial Masterweb y genera el reporte de diferencias por conductor.</p></div><div class="badge">100% en tu navegador</div></header>
+<main>
+  <section class="card">
+    <div class="section-title"><div><span>1</span><h2>Carga los archivos</h2></div><button id="demoBtn" class="ghost">Limpiar</button></div>
+    <p class="hint">Puedes seleccionar todos los archivos juntos. El sistema los reconoce por nombre y contenido.</p>
+    <label class="drop" id="dropZone"><input id="files" type="file" multiple accept=".xls,.xlsx,.csv,.pdf"><strong>Seleccionar o arrastrar archivos</strong><small>CIA, ERPCO SUR/TRT, Volksbus, AVA y depósitos en camino</small></label>
+    <div id="fileGrid" class="file-grid"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><div><span>2</span><h2>Datos manuales</h2></div></div>
+    <div class="form-grid">
+      <label>Recaudación<input id="recaudacion" value="Villahermosa"></label>
+      <label>Fecha de conciliación<input id="fecha" type="date"></label>
+      <label class="wide">Observaciones<textarea id="observaciones" rows="3" placeholder="Ej. AJUSTES EN CIA POR -$55"></textarea></label>
+    </div>
+    <div class="fichas-head"><h3>Fichas e importes</h3><button id="addFicha" class="ghost">+ Agregar fila</button></div>
+    <div id="fichas"></div>
+  </section>
+
+  <section class="card" id="resultsCard">
+    <div class="section-title"><div><span>3</span><h2>Validación y resultado</h2></div><button id="procesar" class="primary">Procesar conciliación</button></div>
+    <div id="status" class="status muted">Carga los archivos y presiona “Procesar conciliación”.</div>
+    <div id="summary" class="summary hidden"></div>
+    <div class="actions hidden" id="actions"><button id="download" class="primary">Descargar Masterweb + diferencias</button><button id="csvDiff" class="ghost">Descargar diferencias CSV</button></div>
+  </section>
+</main>
+<footer>Conciliador Masterweb · Los archivos no se envían a ningún servidor.</footer>
+<script src="app.js"></script>
+</body>
+</html>
