@@ -47,3 +47,10 @@ La aplicación requiere conexión a internet para cargar las librerías externas
 - El total de fichas en D69 se calcula con la fórmula `SUM(D62:D68)`.
 - La diferencia en L69 se calcula con `D69-L44` y se actualiza al capturar importes.
 - Se eliminó la etiqueta DIFERENCIA duplicada.
+
+
+## Versión 5.5 — Fecha automática del reporte CIA
+- La fecha del MasterWeb se toma del campo `Periodo Correspondiente del` del reporte CIA.
+- El portal muestra el periodo detectado y bloquea la fecha para evitar cambios accidentales.
+- El Excel oficial conserva intacta la plantilla corporativa.
+- El archivo se descarga como `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.

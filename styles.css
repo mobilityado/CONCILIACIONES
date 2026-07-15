@@ -51,3 +51,5 @@ body.dark .zip-status.working{background:rgba(109,40,217,.22);color:#c4b5fd;bord
 body.dark .zip-status.warn{background:rgba(146,64,14,.22);color:#fde68a;border-color:rgba(253,230,138,.25)}
 body.dark .zip-status.error{background:rgba(185,28,28,.22);color:#fca5a5;border-color:rgba(252,165,165,.25)}
 @media(max-width:720px){.upload-options{grid-template-columns:1fr}.upload-option{padding:15px}.drop[role=button]{min-height:105px}}
+
+.validation-date span{display:block;margin-top:.35rem;font-size:.72rem;opacity:.72}.validation-date{border-color:#7c3aed!important;background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(168,85,247,.06))!important}input[readonly]{background:#f3e8ff!important;color:#4c1d95!important;font-weight:700}
