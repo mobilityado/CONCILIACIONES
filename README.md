@@ -49,8 +49,12 @@ La aplicación requiere conexión a internet para cargar las librerías externas
 - Se eliminó la etiqueta DIFERENCIA duplicada.
 
 
-## Versión 5.5 — Fecha automática del reporte CIA
+## Versión 5.6 — Fecha automática del día anterior en México
 - La fecha del MasterWeb se toma del campo `Periodo Correspondiente del` del reporte CIA.
 - El portal muestra el periodo detectado y bloquea la fecha para evitar cambios accidentales.
 - El Excel oficial conserva intacta la plantilla corporativa.
 - El archivo se descarga como `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
+
+
+## Fecha de conciliación
+La fecha del MasterWeb se calcula automáticamente como un día anterior a la fecha actual en la zona horaria `America/Mexico_City`. No depende de que el reporte CIA exponga correctamente el periodo. El archivo se descarga con el nombre `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
