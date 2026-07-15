@@ -41,3 +41,9 @@ La aplicación requiere conexión a internet para cargar las librerías externas
 - Corrige la ubicación de AVA SUR y AVA TRT en el formato oficial.
 - Evita duplicar el depósito ERPCO en el campo manual.
 - Mantiene vacíos los depósitos manuales para captura del usuario.
+
+
+## Versión 5.4
+- El total de fichas en D69 se calcula con la fórmula `SUM(D62:D68)`.
+- La diferencia en L69 se calcula con `D69-L44` y se actualiza al capturar importes.
+- Se eliminó la etiqueta DIFERENCIA duplicada.

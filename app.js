@@ -108,7 +108,14 @@ $('#download').onclick=async()=>{try{
   set('C58',session?.role||'Analista administrativo');
   const fichas=[...document.querySelectorAll('.ficha-row')].map(x=>({n:x.querySelector('.ficha-nombre').value.trim(),v:num(x.querySelector('.ficha-importe').value)})).filter(x=>x.n||x.v);
   for(let i=0;i<7;i++){set('C'+(62+i),fichas[i]?.n||'');set('D'+(62+i),fichas[i]?.v||0)}
-  const totalF=fichas.reduce((a,x)=>a+x.v,0);set('C69','Total');set('D69',totalF);set('L69','DIFERENCIA');set('M69',totalF-((ciaEf+ivaEf)+(r.depErpco-r.depCia)+otros));
+  // Mantener los importes capturados y dejar que Excel calcule el total y la diferencia.
+  // D69 suma las siete fichas; L69 resta el total de efectivo a depositar (L44).
+  set('C69','Total');
+  ws.cell('D69').formula('SUM(D62:D68)').style('numberFormat','$#,##0.00;[Red]-$#,##0.00');
+  set('K69','DIFERENCIA');
+  ws.cell('L69').formula('D69-L44').style('numberFormat','$#,##0.00;[Red]-$#,##0.00');
+  // Limpiar celdas que versiones anteriores usaban por error, evitando el texto duplicado.
+  set('M69',null);
 
   const old=wb.sheet('Diferencias CIA-ERPCO');if(old)old.delete();
   const ds=wb.addSheet('Diferencias CIA-ERPCO');
