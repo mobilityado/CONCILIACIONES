@@ -81,7 +81,7 @@ async function parseAVA(f){const wb=XLSX.read(await f.arrayBuffer(),{type:'array
 async function parseDepCIA(f){const txt=await textOf(f);const m=txt.match(/TOTAL[\s\S]{0,250}?\$\s*([\d,]+\.\d{2})/i);if(m)return num(m[1]);const all=[...txt.matchAll(/\$\s*([\d,]+\.\d{2})/g)].map(x=>num(x[1]));return Math.max(0,...all)}
 async function parsePDF(f){const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;let text='';for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p),c=await page.getTextContent();text+=c.items.map(x=>x.str).join(' ')+'\n'}const m=text.match(/T\s*O\s*T\s*A\s*L\s*:?\s*\$?\s*([\d,]+\.\d{2})/i);if(m)return num(m[1]);const vals=[...text.matchAll(/\$\s*([\d,]+\.\d{2})/g)].map(x=>num(x[1]));return Math.max(0,...vals)}
 function mergeDriver(target,map){for(const [id,d] of map){const x=target.get(id)||{id,nombre:'',cia:{canje:0,efectivo:0,prepago:0},erpco:{canje:0,efectivo:0,prepago:0},marcas:new Set()};if(d.cia)for(const k of ['canje','efectivo','prepago'])x.cia[k]+=d.cia[k]||0;if(d.erpco)for(const k of ['canje','efectivo','prepago'])x.erpco[k]+=d.erpco[k]||0;for(const b of d.marcas||[])x.marcas.add(b);target.set(id,x)}}
-function setStatus(msg,kind='muted'){const s=$('#status');s.className='status '+kind;s.textContent=msg}
+function setStatus(msg,kind='muted'){const s=$('#status');s.className='status '+kind;s.textContent=msg;if(kind==='ok'||kind==='error')hideProcessingOverlay()}
 $('#procesar').onclick=async()=>{const processStarted=performance.now();try{setStatus('Procesando archivos…');const found={};for(const f of state.files){const t=detectType(f.name);if(t)found[t.key]=f}const required=['cia','erpcoSur','erpcoSurVb','erpcoTrt','erpcoTrtVb'];const missing=required.filter(k=>!found[k]);if(missing.length)throw new Error('Faltan archivos indispensables: '+missing.map(k=>TYPES.find(x=>x[0]===k)[1]).join(', '));
 const cia=await parseCIA(found.cia);if(Object.keys(cia.summary).length<4)throw new Error('No se pudo localizar el resumen por marca dentro del reporte CIA.');$('#fecha').value=mexicoYesterdayISO();$('#fecha').readOnly=true;$('#fecha').title='Fecha automática: un día anterior a la fecha actual de México';const drivers=new Map();mergeDriver(drivers,cia.drivers);const erpco={},erpcoValidation={};for(const [key,brand,vb] of [['erpcoSur','SUR',false],['erpcoSurVb','SUR VOLKSBUS',true],['erpcoTrt','TRT',false],['erpcoTrtVb','TRT VOLKSBUS',true]]){const p=vb?parseErpcoVB(await textOf(found[key]),brand):parseErpcoStandard(await textOf(found[key]),brand);erpco[brand]=p.tot;erpcoValidation[brand]=p.validation;mergeDriver(drivers,p.drivers)}
 // Validación especial de Prepago: los archivos estándar sí lo incluyen; Volksbus no lo expone por fila.
@@ -360,3 +360,45 @@ showAppSession=function(session){
 };
 const initialConciliaSession=currentSession();
 if(initialConciliaSession)setTimeout(()=>showWelcome(initialConciliaSession),180);
+
+
+/* CONCIL.IA ENTERPRISE 8.0 — experiencia ejecutiva */
+function enterpriseSession(){try{return JSON.parse(sessionStorage.getItem(V4_SESSION)||'null')}catch{return null}}
+function timeGreeting(){const h=Number(new Intl.DateTimeFormat('es-MX',{timeZone:'America/Mexico_City',hour:'2-digit',hour12:false}).format(new Date()));return h<12?['BUENOS DÍAS','Buenos días']:h<19?['BUENAS TARDES','Buenas tardes']:['BUENAS NOCHES','Buenas noches']}
+function refreshEnterpriseHome(){
+  const s=enterpriseSession(),g=timeGreeting();
+  if($('#greetingLabel'))$('#greetingLabel').textContent=g[0];
+  if($('#greetingText'))$('#greetingText').textContent=g[1];
+  if($('#greetingName'))$('#greetingName').textContent=(s?.name||s?.user||'Usuario').split(' ')[0];
+  if($('#dailyDate'))$('#dailyDate').textContent=isoToDisplay(reportDateISO());
+  const loaded=new Set(state.files.map(f=>detectType(f.name)?.key).filter(Boolean));
+  if($('#dailyFiles'))$('#dailyFiles').textContent=`${loaded.size} de ${TYPES.length}`;
+  const history=getHistory();
+  if($('#dailyLast'))$('#dailyLast').textContent=history.length?`${isoToDisplay(history[0].fecha)} · ${history[0].hora}`:'Sin registros';
+  if($('#dailyResult')){if(state.result){const d=totalCIA(state.result)-totalERP(state.result);$('#dailyResult').textContent=Math.abs(d)<=getSettings().tolerance?'Cuadrada':'Requiere revisión';$('#dailyResult').className=Math.abs(d)<=getSettings().tolerance?'enterprise-ok':'enterprise-warn'}else $('#dailyResult').textContent='Pendiente';}
+}
+const enterpriseRenderFiles=renderFiles;
+renderFiles=function(){enterpriseRenderFiles();refreshEnterpriseHome()};
+function showProcessingOverlay(){const o=$('#processingOverlay');if(!o)return;o.classList.remove('hidden');o.setAttribute('aria-hidden','false')}
+function hideProcessingOverlay(){const o=$('#processingOverlay');if(!o)return;o.classList.add('hidden');o.setAttribute('aria-hidden','true')}
+$('#procesar')?.addEventListener('click',showProcessingOverlay,{capture:true});
+function previewMasterweb(){
+  if(!state.result){setStatus('Procesa primero la conciliación para generar la vista previa.','error');return}
+  const r=state.result,global=totalCIA(r)-totalERP(r),tol=getSettings().tolerance;
+  const rows=Object.keys(r.cia.summary).map(b=>{const c=r.cia.summary[b]||{},e=r.erpco[b]||{};const cia=(c.canje||0)+(c.efectivo||0)+(c.prepago||0),erp=(e.canje||0)+(e.efectivo||0)+(e.prepago||0);return `<tr><td>${escapeHtml(b)}</td><td>${money(cia)}</td><td>${money(erp)}</td><td>${money(cia-erp)}</td></tr>`}).join('');
+  const session=enterpriseSession();
+  $('#previewContent').innerHTML=`<div class="preview-brand"><div><h3>CONCIL.IA</h3><p>Resumen de conciliación · ${escapeHtml($('#recaudacion').value||'Villahermosa')}</p></div><strong>${escapeHtml(isoToDisplay(reportDateISO()))}</strong></div><div class="preview-kpis"><div><small>Total CIA</small><strong>${money(totalCIA(r))}</strong></div><div><small>Total ERPCO</small><strong>${money(totalERP(r))}</strong></div><div><small>Diferencia global</small><strong>${money(global)}</strong></div><div><small>Conductores analizados</small><strong>${r.diffs.length}</strong></div></div><table class="preview-table"><thead><tr><th>Marca</th><th>CIA</th><th>ERPCO</th><th>Diferencia</th></tr></thead><tbody>${rows}</tbody></table><div class="preview-status ${Math.abs(global)<=tol?'':'warn'}">${Math.abs(global)<=tol?'✓ Conciliación global cuadrada.':'⚠ La conciliación requiere revisión antes de finalizar.'} &nbsp; Generó: ${escapeHtml(session?.name||session?.user||'Usuario')}</div>`;
+  $('#previewOverlay').classList.remove('hidden');$('#previewOverlay').setAttribute('aria-hidden','false');
+}
+function closePreview(){const o=$('#previewOverlay');if(!o)return;o.classList.add('hidden');o.setAttribute('aria-hidden','true')}
+$('#previewMasterweb')?.addEventListener('click',previewMasterweb);
+$('#closePreview')?.addEventListener('click',closePreview);$('#previewBack')?.addEventListener('click',closePreview);
+$('#previewOverlay')?.addEventListener('click',e=>{if(e.target===$('#previewOverlay'))closePreview()});
+$('#previewDownload')?.addEventListener('click',()=>{closePreview();$('#download')?.click()});
+$('#startConciliationBtn')?.addEventListener('click',()=>$('#uploadCard')?.scrollIntoView({behavior:'smooth',block:'start'}));
+$('#goHistoryBtn')?.addEventListener('click',()=>$('#historyCard')?.scrollIntoView({behavior:'smooth',block:'start'}));
+const enterpriseShowAppSession=showAppSession;
+showAppSession=function(session){enterpriseShowAppSession(session);setTimeout(refreshEnterpriseHome,80)};
+const enterpriseOldSummary=renderSummary;
+renderSummary=function(){enterpriseOldSummary();refreshEnterpriseHome()};
+refreshEnterpriseHome();setInterval(refreshEnterpriseHome,60000);

@@ -34,7 +34,7 @@
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Versión 7.0</small></div></div>
+  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Enterprise 8.0</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
@@ -57,7 +57,7 @@
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>CONCIL.<span class="ia-mark">IA</span> <em>7.0</em></h1>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>8.0</em></h1>
       <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -65,9 +65,28 @@
 </header>
 
 <main>
-  <section class="portal-welcome">
-    <div><span class="portal-kicker">OPERACIÓN DEL DÍA</span><h2>Todo listo para una nueva conciliación</h2><p>Carga tus reportes, valida la información y genera el MasterWeb oficial en un flujo guiado.</p></div>
-    <div class="portal-status"><span><i></i> Motor activo</span><span><i></i> Archivos locales</span><span><i></i> Plantilla oficial</span></div>
+  <section class="enterprise-home" id="enterpriseHome">
+    <div class="enterprise-welcome">
+      <span class="portal-kicker" id="greetingLabel">BUEN DÍA</span>
+      <h2><span id="greetingText">Bienvenido</span>, <strong id="greetingName">Usuario</strong></h2>
+      <p>Tu centro de operación para conciliar CIA y ERPCO, analizar incidencias y generar el formato MasterWeb oficial.</p>
+      <div class="enterprise-actions">
+        <button class="primary" id="startConciliationBtn" type="button">＋ Nueva conciliación</button>
+        <button class="secondary" id="goHistoryBtn" type="button">◷ Consultar historial</button>
+      </div>
+    </div>
+    <div class="daily-panel">
+      <div class="daily-date"><small>FECHA DE CONCILIACIÓN</small><strong id="dailyDate">—</strong><span>Periodo operativo automático</span></div>
+      <div class="daily-grid">
+        <div><small>Estado del motor</small><strong><i class="online-dot"></i> Disponible</strong></div>
+        <div><small>Archivos cargados</small><strong id="dailyFiles">0 de 9</strong></div>
+        <div><small>Última conciliación</small><strong id="dailyLast">Sin registros</strong></div>
+        <div><small>Resultado reciente</small><strong id="dailyResult">Pendiente</strong></div>
+      </div>
+    </div>
+  </section>
+  <section class="security-strip">
+    <span>🔒 Procesamiento privado en el navegador</span><span>✓ Plantilla corporativa protegida</span><span>✓ Sesión validada con Google Sheets</span>
   </section>
   <nav class="steps" aria-label="Flujo de trabajo">
     <span><b>1</b> Archivos</span><span><b>2</b> Datos</span><span><b>3</b> Conciliar</span><span><b>4</b> Descargar</span>
@@ -113,6 +132,7 @@
     <div id="summary" class="summary hidden"></div>
     <div id="brandBreakdown" class="brand-grid hidden"></div>
     <div class="actions hidden" id="actions">
+      <button id="previewMasterweb" class="secondary">Vista previa ejecutiva</button>
       <button id="download" class="primary">Descargar Masterweb + diferencias</button>
       <button id="pdfReport" class="secondary">Descargar reporte PDF</button>
       <button id="csvDiff" class="ghost">Descargar diferencias CSV</button>
@@ -164,7 +184,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>CONCIL.IA 7.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+<footer>CONCIL.IA Enterprise 8.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
 </div></div>
 <div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
   <div class="welcome-panel">
@@ -188,6 +208,22 @@
       <div><small>Diferencia global</small><strong id="completionDifference">—</strong></div>
     </div>
     <button id="completionClose" class="primary full">Revisar resultados</button>
+  </div>
+</div>
+<div id="processingOverlay" class="processing-overlay hidden" aria-hidden="true">
+  <div class="processing-card">
+    <div class="processing-orbit"><span>C.IA</span></div>
+    <h2>Analizando conciliación</h2>
+    <p id="processingMessage">Identificando y validando los archivos…</p>
+    <div class="processing-track"><i></i></div>
+    <small>Los documentos permanecen en este equipo.</small>
+  </div>
+</div>
+<div id="previewOverlay" class="preview-overlay hidden" aria-hidden="true">
+  <div class="preview-modal">
+    <div class="preview-head"><div><span class="eyebrow purple">VISTA PREVIA EJECUTIVA</span><h2>Resumen previo a la descarga</h2></div><button id="closePreview" type="button" aria-label="Cerrar">×</button></div>
+    <div id="previewContent" class="preview-content"></div>
+    <div class="preview-actions"><button id="previewDownload" class="primary" type="button">Descargar MasterWeb oficial</button><button id="previewBack" class="ghost" type="button">Volver</button></div>
   </div>
 </div>
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>

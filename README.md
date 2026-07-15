@@ -1,36 +1,19 @@
-# CONCIL.IA 7.0
+# CONCIL.IA Enterprise 8.0
 
-**Conciliación Inteligente Automatizada** para Recaudación Villahermosa.
+Portal empresarial de conciliación CIA–ERPCO para Recaudación Villahermosa.
 
-## Funciones
+## Novedades de la versión 8
 
-- Inicio de sesión con usuarios y contraseñas validados por Google Sheets / Apps Script.
-- Carga de reportes sueltos o ZIP: CIA, ERPCO, Volksbus, AVA y depósitos.
-- Conciliación automática y análisis por conductor.
-- Dashboard, gráficas, búsqueda, historial local y modo oscuro.
-- Pantalla personalizada de bienvenida y resumen visual al terminar el proceso.
-- Generación del archivo oficial `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
-- Conserva logotipo, colores, bordes, estructura, firmas, fórmulas y formato oficial de la empresa.
-- Fecha automática: día anterior según horario de Ciudad de México.
-- Los archivos se procesan localmente en el navegador.
+- Inicio ejecutivo personalizado por usuario y horario.
+- Panel diario con fecha operativa, archivos cargados y último resultado.
+- Pantalla de procesamiento profesional.
+- Vista previa ejecutiva antes de descargar.
+- Accesos rápidos a nueva conciliación e historial.
+- Interfaz responsive y modo oscuro.
+- Conserva sin cambios el motor validado y la plantilla oficial MasterWeb.
 
-## Publicar en GitHub Pages
+## Publicación en GitHub Pages
 
-1. Sube a la raíz del repositorio todos los archivos de esta carpeta, incluida `assets`.
-2. En GitHub abre **Settings → Pages**.
-3. Selecciona **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
-4. Guarda y espera la publicación.
-5. Abre la página y usa `Ctrl + F5` después de reemplazar una versión anterior.
+Sube el contenido completo de esta carpeta a la raíz del repositorio, incluida `assets/plantilla-masterweb.xlsx`. Activa GitHub Pages desde la rama `main` y la carpeta raíz.
 
-## Google Apps Script
-
-El archivo `GoogleAppsScript_Code.gs` contiene la API de usuarios. La URL de implementación ya está configurada en `app.js`. Si creas otra implementación, actualiza la constante `USERS_API_URL`.
-
-## Nota
-
-MasterWeb es el documento oficial generado por el sistema; **CONCIL.IA** es el nombre del portal.
-
-## Versión 6.1
-- Corrige la duplicación visual de “Total de efectivo a depositar”.
-- El total se conserva únicamente en la celda oficial combinada L44:M44.
-- La celda mantiene la fórmula `=G34+G42+M42` y la diferencia sigue calculándose con `=D69-L44`.
+El inicio de sesión continúa utilizando el Apps Script configurado en `app.js`.
