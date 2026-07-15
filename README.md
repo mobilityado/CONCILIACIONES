@@ -1,19 +1,15 @@
-# CONCIL.IA Enterprise 8.0
+# CONCIL.IA Enterprise 9.0
 
-Portal empresarial de conciliación CIA–ERPCO para Recaudación Villahermosa.
+Portal estático para conciliación CIA–ERPCO y generación del formato oficial MasterWeb.
 
-## Novedades de la versión 8
+## Novedades 9.0
+- Centro de auditoría inteligente con puntuación de confianza.
+- Validaciones automáticas de cobertura, consistencia, faltantes e importes críticos.
+- Priorización de conductores que requieren revisión.
+- Perspectiva histórica local con porcentaje de conciliaciones cuadradas.
+- Exportación de un resumen de auditoría en TXT.
 
-- Inicio ejecutivo personalizado por usuario y horario.
-- Panel diario con fecha operativa, archivos cargados y último resultado.
-- Pantalla de procesamiento profesional.
-- Vista previa ejecutiva antes de descargar.
-- Accesos rápidos a nueva conciliación e historial.
-- Interfaz responsive y modo oscuro.
-- Conserva sin cambios el motor validado y la plantilla oficial MasterWeb.
+El motor de conciliación, el inicio de sesión con Google Sheets y la plantilla oficial de Excel se mantienen sin cambios. Los archivos se procesan localmente en el navegador.
 
-## Publicación en GitHub Pages
-
-Sube el contenido completo de esta carpeta a la raíz del repositorio, incluida `assets/plantilla-masterweb.xlsx`. Activa GitHub Pages desde la rama `main` y la carpeta raíz.
-
-El inicio de sesión continúa utilizando el Apps Script configurado en `app.js`.
+## Publicación
+Sube todo el contenido de esta carpeta a la raíz de GitHub Pages. Después de publicar, actualiza con Ctrl + F5.

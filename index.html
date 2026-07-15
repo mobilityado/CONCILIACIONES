@@ -34,13 +34,14 @@
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Enterprise 8.0</small></div></div>
+  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Enterprise 9.0</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
     <a href="#detailCard">≋ Diferencias</a>
     <a href="#driverCard">◎ Conductores</a>
     <a href="#chartsCard">⌁ Estadísticas</a>
+    <a href="#auditCard">◇ Auditoría inteligente</a>
     <a href="#historyCard">◷ Historial</a>
     <a href="#configCard">⚙ Configuración</a>
   </nav>
@@ -57,7 +58,7 @@
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>CONCIL.<span class="ia-mark">IA</span> <em>8.0</em></h1>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>9.0</em></h1>
       <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -163,6 +164,29 @@
     </div>
   </section>
 
+
+  <section class="card audit-card hidden" id="auditCard">
+    <div class="section-title"><div><span>◇</span><div><h2>Centro de auditoría inteligente</h2><small class="section-subtitle">Validaciones automáticas, nivel de riesgo y recomendaciones operativas</small></div></div><button id="exportAudit" class="ghost" type="button">Exportar resumen</button></div>
+    <div class="audit-hero">
+      <div class="audit-score"><div class="audit-ring" id="auditRing"><strong id="auditScore">—</strong><small>confianza</small></div><div><span class="portal-kicker">DICTAMEN AUTOMÁTICO</span><h3 id="auditVerdict">Procesa una conciliación</h3><p id="auditNarrative">Aquí aparecerá una evaluación basada en integridad de archivos, diferencias, faltantes y consistencia de importes.</p></div></div>
+      <div class="audit-meta"><div><small>Archivos reconocidos</small><strong id="auditFiles">0/9</strong></div><div><small>Incidencias</small><strong id="auditIncidents">—</strong></div><div><small>Importe en revisión</small><strong id="auditExposure">—</strong></div></div>
+    </div>
+    <div class="audit-layout">
+      <div class="audit-checks"><h3>Lista de validaciones</h3><div id="auditChecks" class="check-list"><div class="status muted">Aún no hay resultados para auditar.</div></div></div>
+      <div class="audit-priority"><h3>Prioridades de revisión</h3><div id="auditPriorities" class="priority-list"><div class="status muted">Las incidencias principales aparecerán aquí.</div></div></div>
+    </div>
+  </section>
+
+  <section class="card insights-card" id="insightsCard">
+    <div class="section-title"><div><span>◈</span><div><h2>Perspectiva histórica local</h2><small class="section-subtitle">Tendencias calculadas con las conciliaciones guardadas en este navegador</small></div></div></div>
+    <div class="insight-grid" id="historyInsights">
+      <div><small>Conciliaciones registradas</small><strong>0</strong><span>Sin historial</span></div>
+      <div><small>Días cuadrados</small><strong>0%</strong><span>Sin historial</span></div>
+      <div><small>Diferencia promedio</small><strong>$0.00</strong><span>Valor absoluto</span></div>
+      <div><small>Último operador</small><strong>—</strong><span>Sin actividad</span></div>
+    </div>
+  </section>
+
   <section class="card hidden" id="driverCard">
     <div class="section-title"><div><span>👤</span><h2>Consulta rápida de conductor</h2></div></div>
     <div class="driver-search"><input id="driverQuery" placeholder="Escribe número o nombre del conductor"><button id="driverSearchBtn" class="secondary">Consultar</button></div>
@@ -184,7 +208,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>CONCIL.IA Enterprise 8.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+<footer>CONCIL.IA Enterprise 9.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
 </div></div>
 <div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
   <div class="welcome-panel">

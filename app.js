@@ -402,3 +402,91 @@ showAppSession=function(session){enterpriseShowAppSession(session);setTimeout(re
 const enterpriseOldSummary=renderSummary;
 renderSummary=function(){enterpriseOldSummary();refreshEnterpriseHome()};
 refreshEnterpriseHome();setInterval(refreshEnterpriseHome,60000);
+
+
+/* CONCIL.IA ENTERPRISE 9.0 — auditoría inteligente e indicadores históricos */
+function auditMoney(v){return money(Number(v)||0)}
+function auditLoadedTypes(){return new Set(state.files.map(f=>detectType(f.name)?.key).filter(Boolean))}
+function auditClassification(d){return typeof v3Classify==='function'?v3Classify(d):(Math.abs(d.diferencia||0)<=getSettings().tolerance?'CUADRADO':(d.diferencia>0?'MÁS EN CIA':'MÁS EN ERPCO'))}
+function auditData(){
+  if(!state.result)return null;
+  const r=state.result,tol=getSettings().tolerance,critical=getSettings().criticalAmount;
+  const loaded=auditLoadedTypes(),incidents=r.diffs.filter(d=>Math.abs(Number(d.diferencia)||0)>tol);
+  const missing=incidents.filter(d=>auditClassification(d)==='FALTANTE');
+  const criticalRows=incidents.filter(d=>Math.abs(Number(d.diferencia)||0)>=critical).sort((a,b)=>Math.abs(b.diferencia)-Math.abs(a.diferencia));
+  const exposure=incidents.reduce((a,d)=>a+Math.abs(Number(d.diferencia)||0),0);
+  const global=Math.abs(totalCIA(r)-totalERP(r));
+  const recognized=Math.min(TYPES.length,loaded.size);
+  let score=100;
+  score-=Math.max(0,TYPES.length-recognized)*6;
+  score-=Math.min(24,missing.length*7);
+  score-=Math.min(24,criticalRows.length*5);
+  if(global>tol)score-=Math.min(20,8+Math.log10(global+1)*3);
+  if(incidents.length)score-=Math.min(12,incidents.length/Math.max(1,r.diffs.length)*100*.25);
+  score=Math.max(0,Math.round(score));
+  return {r,tol,critical,loaded,recognized,incidents,missing,criticalRows,exposure,global,score};
+}
+function renderAuditCenter(){
+  const a=auditData(),card=$('#auditCard');
+  if(!card)return;
+  if(!a){card.classList.add('hidden');return}
+  card.classList.remove('hidden');
+  const ring=$('#auditRing');if(ring)ring.style.setProperty('--score',a.score);
+  $('#auditScore').textContent=`${a.score}%`;
+  let verdict='Conciliación confiable';
+  if(a.score<70)verdict='Revisión prioritaria requerida';else if(a.score<90)verdict='Conciliación con observaciones';
+  $('#auditVerdict').textContent=verdict;
+  $('#auditNarrative').textContent=a.score>=90?'Los principales controles automáticos fueron superados. Revisa las fichas y confirma la diferencia final en el formato oficial.':a.score>=70?'La conciliación puede continuar, pero existen incidencias que conviene validar antes de cerrar el proceso.':'Se detectaron señales relevantes de riesgo. Atiende las prioridades antes de generar el documento definitivo.';
+  $('#auditFiles').textContent=`${a.recognized}/${TYPES.length}`;
+  $('#auditIncidents').textContent=String(a.incidents.length);
+  $('#auditExposure').textContent=auditMoney(a.exposure);
+  const checks=[
+    [a.recognized===TYPES.length,'Cobertura de archivos',a.recognized===TYPES.length?'Todos los tipos esperados fueron reconocidos.':`Se reconocieron ${a.recognized} de ${TYPES.length} tipos esperados.`],
+    [a.global<=a.tol,'Consistencia global',a.global<=a.tol?'CIA y ERPCO están dentro de la tolerancia.':`Existe una diferencia global de ${auditMoney(a.global)}.`],
+    [a.missing.length===0,'Conductores presentes',a.missing.length===0?'No se detectaron conductores faltantes.':`${a.missing.length} conductor(es) aparecen solo en un sistema.`],
+    [a.criticalRows.length===0,'Importes críticos',a.criticalRows.length===0?'No hay diferencias por encima del umbral crítico.':`${a.criticalRows.length} diferencia(s) superan ${auditMoney(a.critical)}.`],
+    [a.r.diffs.length>0,'Detalle conciliado',a.r.diffs.length>0?`${a.r.diffs.length} conductores fueron comparados.`:'No se obtuvo detalle de conductores.']
+  ];
+  $('#auditChecks').innerHTML=checks.map(([ok,title,text])=>`<div class="audit-check ${ok?'ok':title==='Detalle conciliado'?'bad':'warn'}"><i>${ok?'✓':'!'}</i><div><b>${escapeHtml(title)}</b><small>${escapeHtml(text)}</small></div></div>`).join('');
+  const priorities=[...a.criticalRows.slice(0,5),...a.missing.filter(x=>!a.criticalRows.includes(x)).slice(0,3)];
+  $('#auditPriorities').innerHTML=priorities.length?priorities.map(d=>{const abs=Math.abs(Number(d.diferencia)||0),level=abs>=a.critical?'high':abs>a.critical*.25?'medium':'low';return `<div class="priority-item ${level}"><div><b>${escapeHtml(d.id||'Sin identificador')}</b><small>${escapeHtml(d.nombre||'Conductor')} · ${escapeHtml(d.marca||'Sin marca')} · ${escapeHtml(auditClassification(d))}</small></div><div class="priority-value"><b>${auditMoney(d.diferencia)}</b><small>Diferencia</small></div></div>`}).join(''):'<div class="audit-check ok"><i>✓</i><div><b>Sin prioridades pendientes</b><small>No se detectaron incidencias que requieran atención inmediata.</small></div></div>';
+}
+function renderHistoryInsights(){
+  const root=$('#historyInsights');if(!root)return;
+  const list=getHistory();
+  if(!list.length){root.innerHTML='<div><small>Conciliaciones registradas</small><strong>0</strong><span>Sin historial</span></div><div><small>Días cuadrados</small><strong>0%</strong><span>Sin historial</span></div><div><small>Diferencia promedio</small><strong>$0.00</strong><span>Valor absoluto</span></div><div><small>Último operador</small><strong>—</strong><span>Sin actividad</span></div>';return}
+  const tol=getSettings().tolerance,ok=list.filter(x=>Math.abs(Number(x.diferencia)||0)<=tol).length;
+  const avg=list.reduce((a,x)=>a+Math.abs(Number(x.diferencia)||0),0)/list.length;
+  const last=list[0];
+  root.innerHTML=`<div><small>Conciliaciones registradas</small><strong>${list.length}</strong><span>Guardadas localmente</span></div><div><small>Días cuadrados</small><strong>${Math.round(ok/list.length*100)}%</strong><span>${ok} de ${list.length} registros</span></div><div><small>Diferencia promedio</small><strong>${auditMoney(avg)}</strong><span>Valor absoluto</span></div><div><small>Último operador</small><strong>${escapeHtml(last.usuario||'Usuario')}</strong><span>${escapeHtml(isoToDisplay(last.fecha))} · ${escapeHtml(last.hora||'')}</span></div>`;
+}
+function exportAuditSummary(){
+  const a=auditData();if(!a){setStatus('Procesa una conciliación antes de exportar el resumen de auditoría.','error');return}
+  const session=enterpriseSession();
+  const lines=[
+    'CONCIL.IA ENTERPRISE 9.0 — RESUMEN DE AUDITORÍA','',
+    `Recaudación: ${$('#recaudacion').value||'Villahermosa'}`,
+    `Fecha operativa: ${isoToDisplay(reportDateISO())}`,
+    `Generó: ${session?.name||session?.user||'Usuario'}`,
+    `Confianza automática: ${a.score}%`,
+    `Archivos reconocidos: ${a.recognized}/${TYPES.length}`,
+    `Conductores analizados: ${a.r.diffs.length}`,
+    `Incidencias: ${a.incidents.length}`,
+    `Conductores faltantes: ${a.missing.length}`,
+    `Importe total en revisión: ${auditMoney(a.exposure)}`,
+    `Diferencia global: ${auditMoney(totalCIA(a.r)-totalERP(a.r))}`,'',
+    'PRIORIDADES',
+    ...(a.criticalRows.slice(0,10).map(d=>`${d.id} | ${d.nombre||''} | ${d.marca||''} | ${auditClassification(d)} | ${auditMoney(d.diferencia)}`)),
+    '', 'Este resumen es una ayuda de revisión. El documento oficial continúa siendo el MasterWeb generado por el sistema.'
+  ];
+  const blob=new Blob([lines.join('\r\n')],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),aTag=document.createElement('a');
+  aTag.href=url;aTag.download=`AUDITORIA_CONCILIA_${reportDateISO().split('-').reverse().join('-')}.txt`;aTag.click();URL.revokeObjectURL(url);
+}
+$('#exportAudit')?.addEventListener('click',exportAuditSummary);
+const v9OldSummary=renderSummary;
+renderSummary=function(){v9OldSummary();renderAuditCenter();renderHistoryInsights()};
+const v9OldHistory=renderHistory;
+renderHistory=function(){v9OldHistory();renderHistoryInsights()};
+const v9OldFiles=renderFiles;
+renderFiles=function(){v9OldFiles();if(state.result)renderAuditCenter()};
+renderHistoryInsights();
