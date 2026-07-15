@@ -29,3 +29,8 @@ El archivo `GoogleAppsScript_Code.gs` contiene la API de usuarios. La URL de imp
 ## Nota
 
 MasterWeb es el documento oficial generado por el sistema; **CONCIL.IA** es el nombre del portal.
+
+## Versión 6.1
+- Corrige la duplicación visual de “Total de efectivo a depositar”.
+- El total se conserva únicamente en la celda oficial combinada L44:M44.
+- La celda mantiene la fórmula `=G34+G42+M42` y la diferencia sigue calculándose con `=D69-L44`.

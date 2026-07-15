@@ -119,7 +119,11 @@ $('#download').onclick=async()=>{try{
   const difByBrand=b=>Math.abs(r.cia.summary[b]?.difCanje||0);set('M37',difByBrand('SUR VOLKSBUS'));set('M38',difByBrand('SUR'));set('M39',difByBrand('TRT'));set('M40',difByBrand('TRT VOLKSBUS'));set('M41',0);
   // Depósitos automáticos en sus renglones correctos; los campos manuales quedan vacíos para captura del usuario.
   set('G37',r.depErpco);set('G38',null);set('G40',r.depCia);set('G41',null);
-  const otros=r.avaSur+r.avaTrt+difByBrand('SUR VOLKSBUS')+difByBrand('SUR')+difByBrand('TRT')+difByBrand('TRT VOLKSBUS');set('M42',otros);set('G42',r.depErpco-r.depCia);set('L45',(ciaEf+ivaEf)+(r.depErpco-r.depCia)+otros);set('C47',$('#observaciones').value||'');
+  const otros=r.avaSur+r.avaTrt+difByBrand('SUR VOLKSBUS')+difByBrand('SUR')+difByBrand('TRT')+difByBrand('TRT VOLKSBUS');set('M42',otros);set('G42',r.depErpco-r.depCia);
+  // El total oficial se muestra únicamente en la celda combinada L44:M44.
+  // Se conserva como fórmula para que Excel lo recalcule con depósitos y otros ingresos.
+  ws.cell('L44').formula('G34+G42+M42').style('numberFormat','$#,##0.00;[Red]-$#,##0.00');
+  set('L45',null);set('M45',null);set('C47',$('#observaciones').value||'');
   const session=JSON.parse(sessionStorage.getItem(V4_SESSION)||'null');
   set('C57',String(session?.name||session?.user||'USUARIO').toUpperCase());
   set('C58',session?.role||'Analista administrativo');
