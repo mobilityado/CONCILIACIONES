@@ -180,7 +180,7 @@ $('#searchDiff').addEventListener('input',renderDiffTable);$('#filterDiff').addE
 $('#pdfReport').onclick=()=>{try{if(!state.result)return;const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'mm',format:'letter'}),r=state.result;doc.setFontSize(18);doc.text('REPORTE DE CONCILIACIÓN CIA VS ERPCO',14,16);doc.setFontSize(10);doc.text(`Recaudación: ${$('#recaudacion').value||'Villahermosa'}    Fecha de conciliación: ${isoToDisplay(reportDateISO())}    Generado: ${new Date().toLocaleString('es-MX')}`,14,23);doc.autoTable({startY:29,head:[['Indicador','Importe']],body:[['Total CIA sin IVA',money(totalCIA(r))],['IVA CIA',money(totalCIA(r,true)-totalCIA(r))],['Total CIA con IVA',money(totalCIA(r,true))],['Total ERPCO',money(totalERP(r))],['Diferencia CIA vs ERPCO',money(totalCIA(r)-totalERP(r))],['AVA SUR',money(r.avaSur)],['AVA TRT',money(r.avaTrt)],['Depósitos ERPCO',money(r.depErpco)],['Depósitos CIA',money(r.depCia)]]});const y=doc.lastAutoTable.finalY+8;doc.setFontSize(13);doc.text('Principales diferencias por conductor',14,y);doc.autoTable({startY:y+4,head:[['Conductor','Marca','CIA','ERPCO','Diferencia','Resultado']],body:r.diffs.filter(d=>Math.abs(d.diferencia)>.009).slice(0,40).map(d=>[d.id,d.marca||'',money(d.ciaTotal),money(d.erpcoTotal),money(d.diferencia),classifyDiff(d)]),styles:{fontSize:8},headStyles:{fillColor:[109,40,217]}});if($('#observaciones').value.trim()){const oy=doc.lastAutoTable.finalY+8;doc.setFontSize(10);doc.text('Observaciones: '+$('#observaciones').value.trim().slice(0,180),14,oy)}doc.save(`REPORTE_CONCILIACION_${safeFilePart($('#recaudacion').value)}_${isoToDisplay(reportDateISO())}.pdf`)}catch(e){console.error(e);setStatus('No fue posible generar el PDF: '+e.message,'error')}};
 
 /* =========================
-   CONCIL.IA 6.0
+   CONCIL.IA 7.0
    ========================= */
 const V3_SETTINGS='masterweb_settings_v3';
 function getSettings(){try{return Object.assign({tolerance:.01,criticalAmount:500},JSON.parse(localStorage.getItem(V3_SETTINGS)||'{}'))}catch{return{tolerance:.01,criticalAmount:500}}}
@@ -211,7 +211,7 @@ $('#driverSearchBtn').onclick=searchDriver;$('#driverQuery').addEventListener('k
 
 
 /* =========================
-   CONCIL.IA 6.0 — usuarios desde Google Sheets
+   CONCIL.IA 7.0 — usuarios desde Google Sheets
    ========================= */
 const V4_SESSION='masterweb_session_v4';
 const USERS_API_URL='https://script.google.com/macros/s/AKfycbxbpunye5mRfeGk86f2DTdpMf63tYdsYRFbsJqDz7NS7h36c645yNG4zGVs1WOfSKVmcQ/exec';
@@ -327,7 +327,7 @@ if(v4OriginalSaveHistory){
 }
 
 
-/* CONCIL.IA 6.0 — bienvenida y cierre visual */
+/* CONCIL.IA 7.0 — bienvenida y cierre visual */
 function currentSession(){try{return JSON.parse(sessionStorage.getItem(V4_SESSION)||'null')}catch{return null}}
 function showWelcome(session){
   if(!session||!$('#welcomeOverlay'))return;

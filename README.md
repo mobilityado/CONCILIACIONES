@@ -1,4 +1,4 @@
-# CONCIL.IA 6.0
+# CONCIL.IA 7.0
 
 **Conciliación Inteligente Automatizada** para Recaudación Villahermosa.
 

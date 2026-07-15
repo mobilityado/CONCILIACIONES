@@ -34,7 +34,7 @@
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Versión 6.0</small></div></div>
+  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Versión 7.0</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
@@ -48,11 +48,16 @@
   <button id="logoutBtn" class="logout">Cerrar sesión</button>
 </aside>
 <div class="app-content">
+<div class="topbar">
+  <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Abrir menú">☰</button>
+  <div class="topbar-title"><strong>Centro de conciliación</strong><small>Operación diaria · Villahermosa</small></div>
+  <div class="topbar-meta"><span class="secure-pill">● Sesión segura</span><div class="topbar-user"><span id="topbarAvatar">A</span><div><b id="topbarUser">Administrador</b><small id="topbarRole">Usuario autorizado</small></div></div></div>
+</div>
 <header class="hero" id="home">
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>CONCIL.<span class="ia-mark">IA</span> <em>6.0</em></h1>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>7.0</em></h1>
       <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -60,12 +65,16 @@
 </header>
 
 <main>
+  <section class="portal-welcome">
+    <div><span class="portal-kicker">OPERACIÓN DEL DÍA</span><h2>Todo listo para una nueva conciliación</h2><p>Carga tus reportes, valida la información y genera el MasterWeb oficial en un flujo guiado.</p></div>
+    <div class="portal-status"><span><i></i> Motor activo</span><span><i></i> Archivos locales</span><span><i></i> Plantilla oficial</span></div>
+  </section>
   <nav class="steps" aria-label="Flujo de trabajo">
     <span><b>1</b> Archivos</span><span><b>2</b> Datos</span><span><b>3</b> Conciliar</span><span><b>4</b> Descargar</span>
   </nav>
 
-  <section class="card" id="uploadCard">
-    <div class="section-title"><div><span>1</span><h2>Carga inteligente de archivos</h2></div><button id="demoBtn" class="ghost">Limpiar carga</button></div>
+  <section class="card card-accent" id="uploadCard">
+    <div class="section-title"><div><span>1</span><div><h2>Carga inteligente de archivos</h2><small class="section-subtitle">Selecciona reportes individuales o un archivo ZIP</small></div></div><button id="demoBtn" class="ghost">Limpiar carga</button></div>
     <p class="hint">Carga los reportes como archivos individuales o, cuando ya los tengas agrupados, mediante un ZIP. También puedes arrastrar ambas opciones al mismo recuadro.</p>
     <div class="upload-options">
       <label class="upload-option primary-option">
@@ -88,7 +97,7 @@
   </section>
 
   <section class="card">
-    <div class="section-title"><div><span>2</span><h2>Datos manuales</h2></div></div>
+    <div class="section-title"><div><span>2</span><div><h2>Datos manuales</h2><small class="section-subtitle">Completa únicamente los campos requeridos</small></div></div></div>
     <div class="form-grid">
       <label>Recaudación<input id="recaudacion" value="Villahermosa"></label>
       <label>Fecha de conciliación (día anterior, horario de México)<input id="fecha" type="date" readonly></label>
@@ -99,7 +108,7 @@
   </section>
 
   <section class="card" id="resultsCard">
-    <div class="section-title"><div><span>3</span><h2>Validación y resultado</h2></div><button id="procesar" class="primary">Procesar conciliación</button></div>
+    <div class="section-title"><div><span>3</span><div><h2>Validación y resultado</h2><small class="section-subtitle">Revisa importes y diferencias antes de descargar</small></div></div><button id="procesar" class="primary primary-large">Procesar conciliación</button></div>
     <div id="status" class="status muted">Carga los archivos y presiona “Procesar conciliación”.</div>
     <div id="summary" class="summary hidden"></div>
     <div id="brandBreakdown" class="brand-grid hidden"></div>
@@ -155,7 +164,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>CONCIL.IA 6.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+<footer>CONCIL.IA 7.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
 </div></div>
 <div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
   <div class="welcome-panel">
@@ -181,6 +190,30 @@
     <button id="completionClose" class="primary full">Revisar resultados</button>
   </div>
 </div>
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
 <script src="app.js"></script>
+<script>
+(function(){
+  const menuBtn=document.getElementById('mobileMenuBtn');
+  const sidebar=document.querySelector('.sidebar');
+  if(menuBtn&&sidebar){menuBtn.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'));}
+  document.querySelectorAll('.sidebar nav a').forEach(a=>a.addEventListener('click',()=>sidebar&&sidebar.classList.remove('mobile-open')));
+  const syncUser=()=>{
+    const name=(document.getElementById('currentUser')?.textContent||'Administrador').trim();
+    const top=document.getElementById('topbarUser'); if(top) top.textContent=name;
+    const av=document.getElementById('topbarAvatar'); if(av) av.textContent=(name[0]||'A').toUpperCase();
+    const stored=JSON.parse(localStorage.getItem('masterweb_session')||localStorage.getItem('concilia_session')||'null');
+    const role=stored?.rol||stored?.role||'Usuario autorizado';
+    const tr=document.getElementById('topbarRole'); if(tr) tr.textContent=role;
+  };
+  setTimeout(syncUser,400); setInterval(syncUser,2500);
+  const nav=[...document.querySelectorAll('.sidebar nav a')];
+  const sections=nav.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){nav.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));}})}, {rootMargin:'-20% 0px -70% 0px'});
+    sections.forEach(s=>io.observe(s));
+  }
+})();
+</script>
 </body>
 </html>
