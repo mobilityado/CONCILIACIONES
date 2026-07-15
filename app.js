@@ -490,3 +490,57 @@ renderHistory=function(){v9OldHistory();renderHistoryInsights()};
 const v9OldFiles=renderFiles;
 renderFiles=function(){v9OldFiles();if(state.result)renderAuditCenter()};
 renderHistoryInsights();
+
+/* CONCIL.IA 9.1 — Copiloto local de conciliación */
+(function initConciliaCopilot(){
+  const launcher=document.getElementById('copilotLauncher'),panel=document.getElementById('copilotPanel'),close=document.getElementById('copilotClose');
+  const form=document.getElementById('copilotForm'),input=document.getElementById('copilotInput'),messages=document.getElementById('copilotMessages');
+  if(!launcher||!panel||!form||!messages)return;
+  const normalize=s=>(s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const fmt=n=>typeof money==='function'?money(Number(n)||0):new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(Number(n)||0);
+  const now=()=>new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  function addMessage(text,who='bot'){
+    const row=document.createElement('div');row.className=`copilot-message ${who}`;
+    const bubble=document.createElement('div');bubble.className='copilot-bubble';bubble.innerHTML=escapeHtml(String(text)).replace(/\n/g,'<br>')+`<span class="copilot-time">${now()}</span>`;
+    row.appendChild(bubble);messages.appendChild(row);messages.scrollTop=messages.scrollHeight;
+  }
+  function filesMissing(){return TYPES.filter(([k])=>!state.files.some(f=>detectType(f.name)?.key===k)).map(([,l])=>l)}
+  function topDiffs(limit=5){return !state.result?[]:[...state.result.diffs].filter(d=>Math.abs(Number(d.diferencia)||0)>getSettings().tolerance).sort((a,b)=>Math.abs(b.diferencia)-Math.abs(a.diferencia)).slice(0,limit)}
+  function brandSummary(){
+    if(!state.result)return '';
+    return Object.keys(state.result.cia.summary).map(b=>{const c=state.result.cia.summary[b]||{},e=state.result.erpco[b]||{};const ct=(c.canje||0)+(c.efectivo||0)+(c.prepago||0),et=(e.canje||0)+(e.efectivo||0)+(e.prepago||0);return `${b}: CIA ${fmt(ct)}, ERPCO ${fmt(et)}, diferencia ${fmt(ct-et)}`}).join('\n');
+  }
+  function answer(question){
+    const q=normalize(question),r=state.result;
+    if(/hola|buenos dias|buenas tardes|quien eres/.test(q)) return '¡Hola! Soy CONCI, la moneda copiloto de CONCIL.IA. Puedo explicarte los totales, diferencias, AVA, depósitos, archivos faltantes y conductores de la conciliación actual.';
+    if(!r){
+      const missing=filesMissing();
+      if(/archivo|falta|carg/.test(q)) return `Aún no se ha procesado una conciliación. Hay ${state.files.length} archivo(s) cargado(s).${missing.length?`\nPendientes por reconocer: ${missing.join(', ')}.`:'\nYa se reconocieron todos los tipos esperados.'}`;
+      return 'Primero carga y procesa los reportes. En cuanto aparezcan los resultados podré analizarlos contigo.';
+    }
+    const net=totalCIA(r)-totalERP(r),tol=getSettings().tolerance,inc=r.diffs.filter(d=>Math.abs(d.diferencia)>tol),missingRows=inc.filter(d=>classifyDiff(d)==='FALTANTE');
+    if(/cuadrad|diferencia global|resultado/.test(q)) return Math.abs(net)<=tol?`Sí. La conciliación global está cuadrada dentro de la tolerancia de ${fmt(tol)}.\nCIA: ${fmt(totalCIA(r))}\nERPCO: ${fmt(totalERP(r))}\nDiferencia: ${fmt(net)}.`:`Todavía requiere revisión.\nCIA: ${fmt(totalCIA(r))}\nERPCO: ${fmt(totalERP(r))}\nDiferencia global: ${fmt(net)} (${net>0?'más en CIA':'más en ERPCO'}).`;
+    if(/importante|mayor diferencia|prioridad|revisar primero|quien tiene mas/.test(q)){
+      const rows=topDiffs();if(!rows.length)return 'No encontré diferencias por conductor fuera de la tolerancia configurada.';
+      return `Estas son las prioridades de revisión:\n${rows.map((d,i)=>`${i+1}. ${d.id}${d.nombre?' · '+d.nombre:''} · ${d.marca||'Sin marca'} · ${fmt(d.diferencia)} (${classifyDiff(d)})`).join('\n')}`;
+    }
+    if(/ava|deposit/.test(q)) return `Recuperación AVA:\nSUR: ${fmt(r.avaSur)}\nTRT: ${fmt(r.avaTrt)}\nTotal AVA: ${fmt((r.avaSur||0)+(r.avaTrt||0))}\n\nDepósitos en camino:\nERPCO recibido: ${fmt(r.depErpco)}\nCIA comprobado: ${fmt(r.depCia)}\nDiferencia: ${fmt((r.depErpco||0)-(r.depCia||0))}.`;
+    if(/archivo|falta|completo/.test(q)){const m=filesMissing();return m.length?`Faltan o no fueron reconocidos ${m.length} tipo(s) de archivo:\n• ${m.join('\n• ')}`:`Los ${TYPES.length} tipos de archivo esperados fueron reconocidos.`}
+    if(/marca|sur|trt|volks/.test(q)) return `Resumen por marca:\n${brandSummary()}`;
+    if(/conductor|faltante|incidencia/.test(q)){
+      const id=(question.match(/\d{5,}/)||[])[0];
+      if(id){const d=r.diffs.find(x=>String(x.id)===id);return d?`Conductor ${d.id}${d.nombre?' · '+d.nombre:''}\nMarca: ${d.marca||'Sin marca'}\nCIA: ${fmt(d.ciaTotal)}\nERPCO: ${fmt(d.erpcoTotal)}\nDiferencia: ${fmt(d.diferencia)}\nResultado: ${classifyDiff(d)}.`:`No encontré al conductor ${id} en la conciliación procesada.`}
+      return `Se analizaron ${r.diffs.length} conductores. Hay ${inc.length} incidencia(s) fuera de tolerancia y ${missingRows.length} registro(s) faltante(s) en uno de los sistemas.`;
+    }
+    if(/iva/.test(q)) return `El IVA total detectado en CIA es ${fmt(totalCIA(r,true)-totalCIA(r))}.\nCIA sin IVA: ${fmt(totalCIA(r))}\nCIA con IVA: ${fmt(totalCIA(r,true))}.`;
+    if(/prepago/.test(q)) return `Prepago ERPCO validado:\n${Object.keys(r.erpco).map(b=>`${b}: ${fmt(r.erpco[b]?.prepago||0)}`).join('\n')}`;
+    if(/resumen|explica|analiza|estado/.test(q)) return `Resumen de la conciliación:\n• CIA sin IVA: ${fmt(totalCIA(r))}\n• ERPCO: ${fmt(totalERP(r))}\n• Diferencia global: ${fmt(net)}\n• Conductores: ${r.diffs.length}\n• Incidencias: ${inc.length}\n• Faltantes: ${missingRows.length}\n• AVA total: ${fmt((r.avaSur||0)+(r.avaTrt||0))}.`;
+    return 'Puedo ayudarte con: estado de la conciliación, diferencias importantes, un conductor específico, IVA, Prepago, AVA, depósitos, marcas o archivos faltantes. Prueba escribiendo: “¿La conciliación está cuadrada?”.';
+  }
+  function open(){panel.classList.add('open');panel.setAttribute('aria-hidden','false');launcher.style.display='none';if(!messages.children.length){const session=enterpriseSession?.();const first=(session?.name||session?.user||'').split(' ')[0];addMessage(`¡Hola${first?' '+first:''}! Soy CONCI 🪙\nEstoy listo para ayudarte a entender la conciliación actual.`)}setTimeout(()=>input.focus(),200)}
+  function shut(){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');launcher.style.display='flex'}
+  launcher.addEventListener('click',open);close.addEventListener('click',shut);
+  document.querySelectorAll('#copilotSuggestions [data-question]').forEach(b=>b.addEventListener('click',()=>{const q=b.dataset.question;addMessage(q,'user');setTimeout(()=>addMessage(answer(q)),180)}));
+  form.addEventListener('submit',e=>{e.preventDefault();const q=input.value.trim();if(!q)return;addMessage(q,'user');input.value='';setTimeout(()=>addMessage(answer(q)),220)});
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))shut()});
+})();

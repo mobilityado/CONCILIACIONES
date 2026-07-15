@@ -34,7 +34,7 @@
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Enterprise 9.0</small></div></div>
+  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Enterprise 9.1</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
@@ -58,7 +58,7 @@
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>CONCIL.<span class="ia-mark">IA</span> <em>9.0</em></h1>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>9.1</em></h1>
       <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -208,7 +208,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>CONCIL.IA Enterprise 9.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+<footer>CONCIL.IA Enterprise 9.1 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
 </div></div>
 <div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
   <div class="welcome-panel">
@@ -250,6 +250,30 @@
     <div class="preview-actions"><button id="previewDownload" class="primary" type="button">Descargar MasterWeb oficial</button><button id="previewBack" class="ghost" type="button">Volver</button></div>
   </div>
 </div>
+
+<button id="copilotLauncher" class="copilot-launcher" type="button" aria-label="Abrir copiloto">
+  <img src="assets/concilia-coin.png" alt="Moneda asistente de CONCIL.IA">
+  <span><b>Copiloto</b><small>Pregúntame sobre la conciliación</small></span>
+</button>
+<aside id="copilotPanel" class="copilot-panel" aria-hidden="true">
+  <header class="copilot-header">
+    <div class="copilot-identity"><img src="assets/concilia-coin.png" alt="Moneda asistente"><div><b>CONCI</b><small>Copiloto de conciliación</small></div></div>
+    <button id="copilotClose" type="button" aria-label="Cerrar copiloto">×</button>
+  </header>
+  <div id="copilotMessages" class="copilot-messages" aria-live="polite"></div>
+  <div class="copilot-suggestions" id="copilotSuggestions">
+    <button type="button" data-question="¿La conciliación está cuadrada?">¿Está cuadrada?</button>
+    <button type="button" data-question="¿Cuáles son las diferencias más importantes?">Diferencias importantes</button>
+    <button type="button" data-question="¿Cuánto hay de AVA y depósitos?">AVA y depósitos</button>
+    <button type="button" data-question="¿Qué archivos faltan?">Archivos faltantes</button>
+  </div>
+  <form id="copilotForm" class="copilot-form">
+    <input id="copilotInput" type="text" autocomplete="off" placeholder="Ej. ¿Quién tiene más diferencia?" aria-label="Pregunta para el copiloto">
+    <button type="submit" aria-label="Enviar pregunta">➤</button>
+  </form>
+  <small class="copilot-note">CONCI responde con los datos cargados en esta sesión. No envía archivos a servicios externos.</small>
+</aside>
+
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 <script src="app.js"></script>
 <script>
