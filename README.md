@@ -29,3 +29,9 @@ La lista y las contraseñas continúan validándose mediante el Google Apps Scri
 ## Nota
 
 La aplicación requiere conexión a internet para cargar las librerías externas (SheetJS, PDF.js, jsPDF y JSZip), aunque los archivos se procesan localmente.
+
+## Versión 5.2 — Validación de Prepago ERPCO
+- Corrige la lectura de Prepago en los CSV estándar SUR y TRT usando la columna real y la fila oficial de totales.
+- Valida los importes de Prepago antes de habilitar la descarga.
+- Integra los importes Volksbus mediante el residual oficial utilizado en el formato manual validado.
+- Muestra en pantalla el origen y el importe validado por cada marca.
