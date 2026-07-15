@@ -1,8 +1,8 @@
-# CONCIL.IA Enterprise 9.1
+# CONCIL.IA Enterprise 9.2
 
 Portal estático para conciliación CIA–ERPCO y generación del formato oficial MasterWeb.
 
-## Novedades 9.1
+## Novedades 9.2
 - Centro de auditoría inteligente con puntuación de confianza.
 - Validaciones automáticas de cobertura, consistencia, faltantes e importes críticos.
 - Priorización de conductores que requieren revisión.
@@ -17,3 +17,9 @@ Sube todo el contenido de esta carpeta a la raíz de GitHub Pages. Después de p
 
 ## Copiloto CONCI
 Incluye un copiloto local con forma de moneda que responde preguntas sobre la conciliación procesada. Funciona en el navegador y no envía archivos a servicios externos.
+
+
+## CONCI más amigable
+- Saludo personalizado: “👋 Hola, José”.
+- Mensajes claros cuando falta algún reporte.
+- Celebración profesional cuando la conciliación queda cuadrada.

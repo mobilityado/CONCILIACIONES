@@ -58,7 +58,7 @@
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>CONCIL.<span class="ia-mark">IA</span> <em>9.1</em></h1>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>9.2</em></h1>
       <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -69,8 +69,8 @@
   <section class="enterprise-home" id="enterpriseHome">
     <div class="enterprise-welcome">
       <span class="portal-kicker" id="greetingLabel">BUEN DÍA</span>
-      <h2><span id="greetingText">Bienvenido</span>, <strong id="greetingName">Usuario</strong></h2>
-      <p>Tu centro de operación para conciliar CIA y ERPCO, analizar incidencias y generar el formato MasterWeb oficial.</p>
+      <h2><span id="greetingText">👋 Hola</span>, <strong id="greetingName">Usuario</strong>.</h2>
+      <p id="greetingMessage">Ya está todo listo para comenzar la conciliación de hoy.</p>
       <div class="enterprise-actions">
         <button class="primary" id="startConciliationBtn" type="button">＋ Nueva conciliación</button>
         <button class="secondary" id="goHistoryBtn" type="button">◷ Consultar historial</button>
@@ -208,14 +208,14 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>CONCIL.IA Enterprise 9.1 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+<footer>CONCIL.IA Enterprise 9.2 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
 </div></div>
 <div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
   <div class="welcome-panel">
     <div class="welcome-symbol">C.IA</div>
     <span class="eyebrow purple">RECAUDACIÓN VILLAHERMOSA</span>
-    <h2>Bienvenido a CONCIL.<span class="ia-mark">IA</span></h2>
-    <p>Sistema Inteligente de Conciliación</p>
+    <h2 id="welcomeGreeting">👋 Hola, Usuario.</h2>
+    <p id="welcomeMessage">Ya está todo listo para comenzar la conciliación de hoy.</p>
     <div class="welcome-user"><strong id="welcomeName">Usuario</strong><small id="welcomeRole">Rol</small></div>
     <button id="welcomeContinue" class="primary full">Comenzar conciliación</button>
   </div>
@@ -224,7 +224,7 @@
 <div id="completionOverlay" class="completion-overlay hidden" aria-hidden="true">
   <div class="completion-panel">
     <div class="completion-check">✓</div>
-    <h2>Conciliación procesada</h2>
+    <h2 id="completionTitle">Conciliación procesada</h2>
     <p id="completionText">Los archivos fueron analizados correctamente.</p>
     <div class="completion-kpis">
       <div><small>Periodo</small><strong id="completionDate">—</strong></div>
