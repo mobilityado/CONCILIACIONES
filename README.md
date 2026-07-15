@@ -35,3 +35,9 @@ La aplicación requiere conexión a internet para cargar las librerías externas
 - Valida los importes de Prepago antes de habilitar la descarga.
 - Integra los importes Volksbus mediante el residual oficial utilizado en el formato manual validado.
 - Muestra en pantalla el origen y el importe validado por cada marca.
+
+
+## Versión 5.3
+- Corrige la ubicación de AVA SUR y AVA TRT en el formato oficial.
+- Evita duplicar el depósito ERPCO en el campo manual.
+- Mantiene vacíos los depósitos manuales para captura del usuario.

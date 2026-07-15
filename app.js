@@ -96,8 +96,12 @@ $('#download').onclick=async()=>{try{
   const erCanje=Object.values(r.erpco).reduce((a,x)=>a+x.canje,0),erEf=Object.values(r.erpco).reduce((a,x)=>a+x.efectivo,0),erPr=Object.values(r.erpco).reduce((a,x)=>a+x.prepago,0);
   set('D19',ciaCanje);set('E19',ciaEf);set('F19',ciaPr);set('G19',erCanje);set('H19',erEf);set('I19',erPr);set('J19',ciaCanje-erCanje);set('K19',ciaEf-erEf);set('L19',ciaPr-erPr);
   set('D20',ivaCanje);set('E20',ivaEf);set('F20',ivaPr);set('D21',ciaCanje+ivaCanje);set('E21',ciaEf+ivaEf);set('F21',ciaPr+ivaPr);
-  set('E26',ciaEf);set('F26',ivaEf);set('G26',ciaEf+ivaEf);set('K26',ciaPr);set('L26',ivaPr);set('M26',ciaPr+ivaPr);set('G32',ciaEf+ivaEf);set('M32',ciaPr+ivaPr);set('M36',r.avaSur);set('M37',r.avaTrt);
-  const difByBrand=b=>Math.abs(r.cia.summary[b]?.difCanje||0);set('M38',difByBrand('SUR VOLKSBUS'));set('M39',difByBrand('SUR'));set('M40',difByBrand('TRT'));set('M41',difByBrand('TRT VOLKSBUS'));set('G38',r.depErpco);set('G40',r.depCia);
+  set('E26',ciaEf);set('F26',ivaEf);set('G26',ciaEf+ivaEf);set('K26',ciaPr);set('L26',ivaPr);set('M26',ciaPr+ivaPr);set('G32',ciaEf+ivaEf);set('M32',ciaPr+ivaPr);
+  // Celdas oficiales del formato: AVA SUR=M35, AVA TRT=M36.
+  set('M35',r.avaSur);set('M36',r.avaTrt);
+  const difByBrand=b=>Math.abs(r.cia.summary[b]?.difCanje||0);set('M37',difByBrand('SUR VOLKSBUS'));set('M38',difByBrand('SUR'));set('M39',difByBrand('TRT'));set('M40',difByBrand('TRT VOLKSBUS'));set('M41',0);
+  // Depósitos automáticos en sus renglones correctos; los campos manuales quedan vacíos para captura del usuario.
+  set('G37',r.depErpco);set('G38',null);set('G40',r.depCia);set('G41',null);
   const otros=r.avaSur+r.avaTrt+difByBrand('SUR VOLKSBUS')+difByBrand('SUR')+difByBrand('TRT')+difByBrand('TRT VOLKSBUS');set('M42',otros);set('G42',r.depErpco-r.depCia);set('L45',(ciaEf+ivaEf)+(r.depErpco-r.depCia)+otros);set('C47',$('#observaciones').value||'');
   const session=JSON.parse(sessionStorage.getItem(V4_SESSION)||'null');
   set('C57',String(session?.name||session?.user||'USUARIO').toUpperCase());
