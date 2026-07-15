@@ -1,60 +1,186 @@
-# MasterWeb Pro 5.0
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#6d28d9">
+  <title>CONCIL.IA · Sistema Inteligente de Conciliación</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-populate@1.21.0/browser/xlsx-populate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">C.IA</div>
+    <span class="eyebrow purple">RECAUDACIÓN VILLAHERMOSA</span>
+    <h1>CONCIL.<span class="ia-mark">IA</span></h1>
+    <p>Conciliación Inteligente Automatizada · CIA y ERPCO</p>
+    <label>Usuario
+      <select id="loginUser" autocomplete="username" disabled>
+        <option value="">Cargando usuarios…</option>
+      </select>
+    </label>
+    <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></label>
+    <button id="loginBtn" class="primary full" disabled>Ingresar</button>
+    <button id="reloadUsersBtn" class="secondary full login-reload" type="button">↻ Actualizar lista de usuarios</button>
+    <div id="loginMessage" class="login-message"></div>
+    <small>Usuarios validados mediante Google Sheets. Los archivos de conciliación permanecen en este navegador.</small>
+  </div>
+</div>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><span>C.IA</span><div><b>CONCIL.<i>IA</i></b><small>Versión 6.0</small></div></div>
+  <nav>
+    <a href="#resultsCard">▦ Dashboard</a>
+    <a href="#uploadCard">⇧ Nueva conciliación</a>
+    <a href="#detailCard">≋ Diferencias</a>
+    <a href="#driverCard">◎ Conductores</a>
+    <a href="#chartsCard">⌁ Estadísticas</a>
+    <a href="#historyCard">◷ Historial</a>
+    <a href="#configCard">⚙ Configuración</a>
+  </nav>
+  <div class="sidebar-user"><div class="avatar">A</div><div><b id="currentUser">Administrador</b><small>Sesión local</small></div></div>
+  <button id="logoutBtn" class="logout">Cerrar sesión</button>
+</aside>
+<div class="app-content">
+<header class="hero" id="home">
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
+      <h1>CONCIL.<span class="ia-mark">IA</span> <em>6.0</em></h1>
+      <p>Sistema inteligente de conciliación CIA · ERPCO, generación del formato oficial MasterWeb y análisis por conductor.</p>
+    </div>
+    <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
+  </div>
+</header>
 
-Sistema de conciliación CIA–ERPCO listo para GitHub Pages.
+<main>
+  <nav class="steps" aria-label="Flujo de trabajo">
+    <span><b>1</b> Archivos</span><span><b>2</b> Datos</span><span><b>3</b> Conciliar</span><span><b>4</b> Descargar</span>
+  </nav>
 
-## Novedad principal
+  <section class="card" id="uploadCard">
+    <div class="section-title"><div><span>1</span><h2>Carga inteligente de archivos</h2></div><button id="demoBtn" class="ghost">Limpiar carga</button></div>
+    <p class="hint">Carga los reportes como archivos individuales o, cuando ya los tengas agrupados, mediante un ZIP. También puedes arrastrar ambas opciones al mismo recuadro.</p>
+    <div class="upload-options">
+      <label class="upload-option primary-option">
+        <input id="files" type="file" multiple accept=".xls,.xlsx,.csv,.pdf">
+        <span class="upload-icon">📄</span>
+        <b>Cargar archivos sueltos</b>
+        <small>Selecciona CIA, ERPCO, AVA y depósitos de forma individual.</small>
+      </label>
+      <label class="upload-option">
+        <input id="zipFiles" type="file" multiple accept=".zip,application/zip">
+        <span class="upload-icon">🗜️</span>
+        <b>Cargar archivo ZIP</b>
+        <small>El sistema lo descomprime y reconoce automáticamente los reportes.</small>
+      </label>
+    </div>
+    <div class="drop" id="dropZone" role="button" tabindex="0"><strong>Arrastra aquí archivos sueltos o ZIP</strong><small>Formatos admitidos: XLS, XLSX, CSV, PDF y ZIP</small></div>
+    <div id="zipStatus" class="zip-status hidden"></div>
+    <div id="fileGrid" class="file-grid"></div>
+    <div id="coverage" class="coverage"></div>
+  </section>
 
-La carga ahora admite dos flujos sin cambiar la conciliación existente:
+  <section class="card">
+    <div class="section-title"><div><span>2</span><h2>Datos manuales</h2></div></div>
+    <div class="form-grid">
+      <label>Recaudación<input id="recaudacion" value="Villahermosa"></label>
+      <label>Fecha de conciliación (día anterior, horario de México)<input id="fecha" type="date" readonly></label>
+      <label class="wide">Observaciones<textarea id="observaciones" rows="3" placeholder="Ej. AJUSTES EN CIA POR -$55"></textarea></label>
+    </div>
+    <div class="fichas-head"><h3>Fichas e importes</h3><button id="addFicha" class="ghost">+ Agregar fila</button></div>
+    <div id="fichas"></div>
+  </section>
 
-- **Archivos sueltos:** XLS, XLSX, CSV y PDF.
-- **Archivo ZIP:** se descomprime localmente en el navegador y se extraen automáticamente los reportes compatibles.
-- También se pueden combinar archivos sueltos y ZIP en una misma conciliación.
+  <section class="card" id="resultsCard">
+    <div class="section-title"><div><span>3</span><h2>Validación y resultado</h2></div><button id="procesar" class="primary">Procesar conciliación</button></div>
+    <div id="status" class="status muted">Carga los archivos y presiona “Procesar conciliación”.</div>
+    <div id="summary" class="summary hidden"></div>
+    <div id="brandBreakdown" class="brand-grid hidden"></div>
+    <div class="actions hidden" id="actions">
+      <button id="download" class="primary">Descargar Masterweb + diferencias</button>
+      <button id="pdfReport" class="secondary">Descargar reporte PDF</button>
+      <button id="csvDiff" class="ghost">Descargar diferencias CSV</button>
+    </div>
+  </section>
 
-Los documentos nunca se envían a un servidor. El ZIP se procesa con JSZip directamente en el navegador.
-
-## Publicación en GitHub Pages
-
-1. Descomprime este proyecto.
-2. Sube el contenido de `conciliador-masterweb` a la raíz del repositorio.
-3. En GitHub abre **Settings → Pages**.
-4. Selecciona **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
-5. Guarda y actualiza con `Ctrl + F5` cuando termine la publicación.
-
-## Usuarios
-
-La lista y las contraseñas continúan validándose mediante el Google Apps Script configurado en `app.js`. El archivo `GoogleAppsScript_Code.gs` conserva la versión compatible con la hoja:
-
-`CONTRASEÑA | USUARIO | NOMBRE | ROL`
-
-## Nota
-
-La aplicación requiere conexión a internet para cargar las librerías externas (SheetJS, PDF.js, jsPDF y JSZip), aunque los archivos se procesan localmente.
-
-## Versión 5.2 — Validación de Prepago ERPCO
-- Corrige la lectura de Prepago en los CSV estándar SUR y TRT usando la columna real y la fila oficial de totales.
-- Valida los importes de Prepago antes de habilitar la descarga.
-- Integra los importes Volksbus mediante el residual oficial utilizado en el formato manual validado.
-- Muestra en pantalla el origen y el importe validado por cada marca.
-
-
-## Versión 5.3
-- Corrige la ubicación de AVA SUR y AVA TRT en el formato oficial.
-- Evita duplicar el depósito ERPCO en el campo manual.
-- Mantiene vacíos los depósitos manuales para captura del usuario.
+  <section class="card hidden" id="detailCard">
+    <div class="section-title"><div><span>4</span><h2>Diferencias por conductor</h2></div><div class="legend"><i class="okdot"></i> Cuadrado <i class="warndot"></i> Diferencia <i class="baddot"></i> Faltante</div></div>
+    <div class="toolbar">
+      <input id="searchDiff" placeholder="Buscar conductor, nombre o marca">
+      <select id="filterDiff"><option value="TODOS">Todos</option><option value="CUADRADO">Cuadrados</option><option value="MÁS EN CIA">Más en CIA</option><option value="MÁS EN ERPCO">Más en ERPCO</option><option value="FALTANTE">Faltantes</option></select>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Conductor</th><th>Marca</th><th>CIA</th><th>ERPCO</th><th>Diferencia</th><th>Resultado</th></tr></thead><tbody id="diffBody"></tbody></table></div>
+    <p id="diffCount" class="hint"></p>
+  </section>
 
 
-## Versión 5.4
-- El total de fichas en D69 se calcula con la fórmula `SUM(D62:D68)`.
-- La diferencia en L69 se calcula con `D69-L44` y se actualiza al capturar importes.
-- Se eliminó la etiqueta DIFERENCIA duplicada.
+  <section class="card hidden" id="intelligenceCard">
+    <div class="section-title"><div><span>🤖</span><h2>Análisis inteligente de conciliación</h2></div><button id="copyAnalysis" class="ghost">Copiar análisis</button></div>
+    <div id="smartAnalysis" class="analysis-box"></div>
+  </section>
 
+  <section class="card hidden" id="chartsCard">
+    <div class="section-title"><div><span>📈</span><h2>Indicadores visuales</h2></div></div>
+    <div class="chart-grid">
+      <div class="chart-panel"><h3>Diferencia absoluta por marca</h3><canvas id="brandChart" width="620" height="280"></canvas></div>
+      <div class="chart-panel"><h3>Estado de conductores</h3><canvas id="statusChart" width="620" height="280"></canvas></div>
+    </div>
+  </section>
 
-## Versión 5.6 — Fecha automática del día anterior en México
-- La fecha del MasterWeb se toma del campo `Periodo Correspondiente del` del reporte CIA.
-- El portal muestra el periodo detectado y bloquea la fecha para evitar cambios accidentales.
-- El Excel oficial conserva intacta la plantilla corporativa.
-- El archivo se descarga como `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
+  <section class="card hidden" id="driverCard">
+    <div class="section-title"><div><span>👤</span><h2>Consulta rápida de conductor</h2></div></div>
+    <div class="driver-search"><input id="driverQuery" placeholder="Escribe número o nombre del conductor"><button id="driverSearchBtn" class="secondary">Consultar</button></div>
+    <div id="driverResult" class="driver-result status muted">Procesa una conciliación y busca un conductor.</div>
+  </section>
 
+  <section class="card" id="configCard">
+    <div class="section-title"><div><span>⚙️</span><h2>Configuración</h2></div></div>
+    <div class="form-grid compact">
+      <label>Tolerancia para considerar cuadrado ($)<input id="tolerance" type="number" step="0.01" min="0" value="0.01"></label>
+      <label>Diferencia importante desde ($)<input id="criticalAmount" type="number" step="0.01" min="0" value="500"></label>
+    </div>
+    <p class="hint">La configuración se guarda únicamente en este navegador.</p>
+  </section>
 
-## Fecha de conciliación
-La fecha del MasterWeb se calcula automáticamente como un día anterior a la fecha actual en la zona horaria `America/Mexico_City`. No depende de que el reporte CIA exponga correctamente el periodo. El archivo se descarga con el nombre `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
+  <section class="card" id="historyCard">
+    <div class="section-title"><div><span>⏱</span><h2>Historial local y bitácora</h2></div><button id="clearHistory" class="ghost">Borrar historial</button></div>
+    <p class="hint">Se guarda únicamente un resumen en este navegador. Los archivos originales nunca se almacenan.</p>
+    <div id="history" class="history"></div>
+  </section>
+</main>
+<footer>CONCIL.IA 6.0 · Conciliación Inteligente Automatizada · Los documentos se procesan localmente.</footer>
+</div></div>
+<div id="welcomeOverlay" class="welcome-overlay hidden" aria-hidden="true">
+  <div class="welcome-panel">
+    <div class="welcome-symbol">C.IA</div>
+    <span class="eyebrow purple">RECAUDACIÓN VILLAHERMOSA</span>
+    <h2>Bienvenido a CONCIL.<span class="ia-mark">IA</span></h2>
+    <p>Sistema Inteligente de Conciliación</p>
+    <div class="welcome-user"><strong id="welcomeName">Usuario</strong><small id="welcomeRole">Rol</small></div>
+    <button id="welcomeContinue" class="primary full">Comenzar conciliación</button>
+  </div>
+</div>
+
+<div id="completionOverlay" class="completion-overlay hidden" aria-hidden="true">
+  <div class="completion-panel">
+    <div class="completion-check">✓</div>
+    <h2>Conciliación procesada</h2>
+    <p id="completionText">Los archivos fueron analizados correctamente.</p>
+    <div class="completion-kpis">
+      <div><small>Periodo</small><strong id="completionDate">—</strong></div>
+      <div><small>Tiempo de proceso</small><strong id="completionTime">—</strong></div>
+      <div><small>Diferencia global</small><strong id="completionDifference">—</strong></div>
+    </div>
+    <button id="completionClose" class="primary full">Revisar resultados</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

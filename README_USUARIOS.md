@@ -1,34 +1,31 @@
-# MasterWeb Pro 4.2 — Usuarios desde Google Sheets
+# CONCIL.IA 6.0
 
-## Estructura compatible
+**Conciliación Inteligente Automatizada** para Recaudación Villahermosa.
 
-La hoja puede tener las columnas en este orden:
+## Funciones
 
-| CONTRASEÑA | USUARIO | NOMBRE | ROL |
-|---|---|---|---|
+- Inicio de sesión con usuarios y contraseñas validados por Google Sheets / Apps Script.
+- Carga de reportes sueltos o ZIP: CIA, ERPCO, Volksbus, AVA y depósitos.
+- Conciliación automática y análisis por conductor.
+- Dashboard, gráficas, búsqueda, historial local y modo oscuro.
+- Pantalla personalizada de bienvenida y resumen visual al terminar el proceso.
+- Generación del archivo oficial `MASTERWEB_Villahermosa_DD-MM-AAAA.xlsx`.
+- Conserva logotipo, colores, bordes, estructura, firmas, fórmulas y formato oficial de la empresa.
+- Fecha automática: día anterior según horario de Ciudad de México.
+- Los archivos se procesan localmente en el navegador.
 
-El script identifica los encabezados por nombre, por lo que también funcionará si cambia su orden.
+## Publicar en GitHub Pages
 
-## Actualizar Google Apps Script
+1. Sube a la raíz del repositorio todos los archivos de esta carpeta, incluida `assets`.
+2. En GitHub abre **Settings → Pages**.
+3. Selecciona **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
+4. Guarda y espera la publicación.
+5. Abre la página y usa `Ctrl + F5` después de reemplazar una versión anterior.
 
-1. Abre el proyecto de Apps Script conectado a la hoja.
-2. Sustituye todo el código por `GoogleAppsScript_Code.gs`.
-3. Guarda.
-4. Ve a **Implementar → Administrar implementaciones**.
-5. Edita la implementación existente.
-6. En **Versión**, selecciona **Nueva versión**.
-7. Ejecutar como: **Yo**.
-8. Quién tiene acceso: **Cualquier persona**.
-9. Pulsa **Implementar**.
+## Google Apps Script
 
-La URL `/exec` puede permanecer igual.
+El archivo `GoogleAppsScript_Code.gs` contiene la API de usuarios. La URL de implementación ya está configurada en `app.js`. Si creas otra implementación, actualiza la constante `USERS_API_URL`.
 
-## Prueba de lista
+## Nota
 
-Abre la URL `/exec?accion=usuarios`. Debe devolver JSON y nunca debe mostrar contraseñas.
-
-## Corrección incluida
-
-La página ahora envía el acceso como JSON (`text/plain`) y Apps Script acepta tanto JSON como formularios. Esto corrige el error:
-
-`Unexpected token 'a', "accion=login..." is not valid JSON`
+MasterWeb es el documento oficial generado por el sistema; **CONCIL.IA** es el nombre del portal.
