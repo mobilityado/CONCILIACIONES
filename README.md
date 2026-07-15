@@ -1,35 +1,31 @@
-# MasterWeb Pro 4.0
+# MasterWeb Pro 5.0
 
-Sistema web local para conciliar reportes CIA y ERPCO, llenar la plantilla oficial de Integración Masterweb y generar reportes de diferencias.
+Sistema de conciliación CIA–ERPCO listo para GitHub Pages.
 
-## Acceso inicial
+## Novedad principal
 
-- Usuario: `admin`
-- Contraseña: `485218`
+La carga ahora admite dos flujos sin cambiar la conciliación existente:
 
-> El inicio de sesión es local y sirve como control operativo básico. GitHub Pages es alojamiento estático; para seguridad corporativa real se requiere autenticación en servidor o Microsoft Entra ID.
+- **Archivos sueltos:** XLS, XLSX, CSV y PDF.
+- **Archivo ZIP:** se descomprime localmente en el navegador y se extraen automáticamente los reportes compatibles.
+- También se pueden combinar archivos sueltos y ZIP en una misma conciliación.
 
-## Publicar en GitHub Pages
+Los documentos nunca se envían a un servidor. El ZIP se procesa con JSZip directamente en el navegador.
 
-1. Descomprime el proyecto.
-2. Sube **el contenido interno** de la carpeta `conciliador-masterweb` a la raíz de tu repositorio.
+## Publicación en GitHub Pages
+
+1. Descomprime este proyecto.
+2. Sube el contenido de `conciliador-masterweb` a la raíz del repositorio.
 3. En GitHub abre **Settings → Pages**.
 4. Selecciona **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
-5. Guarda y espera la publicación.
+5. Guarda y actualiza con `Ctrl + F5` cuando termine la publicación.
 
-## Funciones
+## Usuarios
 
-- Tema corporativo púrpura y diseño adaptable.
-- Sesión local y bitácora de conciliaciones.
-- Carga inteligente CIA, ERPCO, Volksbus, AVA y depósitos.
-- Lectura automática de IVA CIA y Dif. Canje.
-- Generación del Excel oficial con segunda hoja de diferencias.
-- PDF ejecutivo, CSV, dashboard, análisis inteligente y consulta por conductor.
-- Historial guardado en el navegador.
+La lista y las contraseñas continúan validándose mediante el Google Apps Script configurado en `app.js`. El archivo `GoogleAppsScript_Code.gs` conserva la versión compatible con la hoja:
 
-## Privacidad
+`CONTRASEÑA | USUARIO | NOMBRE | ROL`
 
-Los documentos se procesan en el navegador y no se envían a un servidor. El historial se guarda mediante `localStorage` y la sesión mediante `sessionStorage`.
+## Nota
 
-## Actualización 4.2
-Se corrigió la comunicación del inicio de sesión con Apps Script. El login ahora envía JSON compatible con `e.postData.contents`, maneja respuestas no JSON y admite la hoja `CONTRASEÑA | USUARIO | NOMBRE | ROL`.
+La aplicación requiere conexión a internet para cargar las librerías externas (SheetJS, PDF.js, jsPDF y JSZip), aunque los archivos se procesan localmente.

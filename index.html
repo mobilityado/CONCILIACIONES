@@ -4,12 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#6d28d9">
-  <title>MasterWeb Pro 4.1</title>
+  <title>MasterWeb Pro 5.0</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
 <div id="loginScreen" class="login-screen">
@@ -32,7 +33,7 @@
 </div>
 <div class="app-shell">
 <aside class="sidebar">
-  <div class="brand"><span>MW</span><div><b>MasterWeb Pro</b><small>Versión 4.1</small></div></div>
+  <div class="brand"><span>MW</span><div><b>MasterWeb Pro</b><small>Versión 5.0</small></div></div>
   <nav>
     <a href="#resultsCard">▦ Dashboard</a>
     <a href="#uploadCard">⇧ Nueva conciliación</a>
@@ -50,7 +51,7 @@
   <div class="hero-inner">
     <div>
       <span class="eyebrow">RECAUDACIÓN VILLAHERMOSA</span>
-      <h1>MasterWeb Pro <em>4.0</em></h1>
+      <h1>MasterWeb Pro <em>5.0</em></h1>
       <p>Conciliación automática CIA · ERPCO, integración oficial y reporte detallado por conductor.</p>
     </div>
     <div class="hero-actions"><div class="hero-badges"><span>🔒 Procesamiento local</span><span>⚡ Sin servidor</span></div><button id="themeToggle" class="theme-toggle" title="Cambiar apariencia">🌙 Modo oscuro</button></div>
@@ -64,8 +65,23 @@
 
   <section class="card" id="uploadCard">
     <div class="section-title"><div><span>1</span><h2>Carga inteligente de archivos</h2></div><button id="demoBtn" class="ghost">Limpiar carga</button></div>
-    <p class="hint">Arrastra todos los reportes juntos. El sistema reconoce CIA, ERPCO, Volksbus, AVA y depósitos.</p>
-    <label class="drop" id="dropZone"><input id="files" type="file" multiple accept=".xls,.xlsx,.csv,.pdf"><strong>Seleccionar o arrastrar archivos</strong><small>CIA, ERPCO SUR/TRT, Volksbus, AVA y depósitos en camino</small></label>
+    <p class="hint">Carga los reportes como archivos individuales o, cuando ya los tengas agrupados, mediante un ZIP. También puedes arrastrar ambas opciones al mismo recuadro.</p>
+    <div class="upload-options">
+      <label class="upload-option primary-option">
+        <input id="files" type="file" multiple accept=".xls,.xlsx,.csv,.pdf">
+        <span class="upload-icon">📄</span>
+        <b>Cargar archivos sueltos</b>
+        <small>Selecciona CIA, ERPCO, AVA y depósitos de forma individual.</small>
+      </label>
+      <label class="upload-option">
+        <input id="zipFiles" type="file" multiple accept=".zip,application/zip">
+        <span class="upload-icon">🗜️</span>
+        <b>Cargar archivo ZIP</b>
+        <small>El sistema lo descomprime y reconoce automáticamente los reportes.</small>
+      </label>
+    </div>
+    <div class="drop" id="dropZone" role="button" tabindex="0"><strong>Arrastra aquí archivos sueltos o ZIP</strong><small>Formatos admitidos: XLS, XLSX, CSV, PDF y ZIP</small></div>
+    <div id="zipStatus" class="zip-status hidden"></div>
     <div id="fileGrid" class="file-grid"></div>
     <div id="coverage" class="coverage"></div>
   </section>
@@ -138,7 +154,7 @@
     <div id="history" class="history"></div>
   </section>
 </main>
-<footer>MasterWeb Pro 4.1 · Los archivos no se envían a ningún servidor.</footer>
+<footer>MasterWeb Pro 5.0 · Archivos sueltos o ZIP · Los documentos no se envían a ningún servidor.</footer>
 </div></div>
 <script src="app.js"></script>
 </body>
